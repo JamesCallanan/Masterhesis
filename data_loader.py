@@ -61,8 +61,8 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     # ###########################################################################################################################
     # # Fn only moves images corresponding to disease classes in disease_classes array into the data/train directory
     # # Fn also returns a dictionary that contains a list of paths to the images that have been moved to the data/train directory and their corresponding ground truth (gt) segmentation maps in the unzipped_training_data_path 
-    # seg_masks_and_image_paths = move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path=unzipped_training_data_path, performROI = performROI)
-
+    seg_masks_and_image_paths = move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path=unzipped_training_data_path, performROI = performROI)
+    return seg_masks_and_image_paths
     # ###########################################################################################################################
 
     # #want to change previous code so files are only copied if in disease_classes
