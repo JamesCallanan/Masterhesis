@@ -116,6 +116,8 @@ def heart_bounding_box_edge_finder(summed_seg_map):
 # Fn also returns a dictionary that contains a list of paths to the images that have been moved to the data/train directory and their corresponding ground truth (gt) segmentation maps in the base_training_data_path 
 
 def move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path, performROI = False):
+    print(unzipped_training_data_path)
+    print(os.walk(unzipped_training_data_path))
     patients_data_paths = sorted([x[0] for x in os.walk(unzipped_training_data_path)])[1:] #[1:] removes the current directory /.
     print(patient_data_paths)
     seg_masks_and_image_paths = {}
