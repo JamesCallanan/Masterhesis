@@ -64,7 +64,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     # # Classification labels vary depending on whether this is a binary or multiclass classification problem
     # # For binary classification the labels the first disease class in disease_classes array will be given a 0 label and the second will be given the label 2
 
-    # binary_classification_label = 0
+    binary_classification_label = 0
 
     x_train = []
     y_train = []

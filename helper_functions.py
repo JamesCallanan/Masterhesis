@@ -182,8 +182,8 @@ def read_nifti_file(filepath):
 
 def normalize(volume):
     """Normalize the volume"""
-    #Do we need these?
-    print(type(volume))
+    #Why does the code not work when we comment out the min and max code - something to do with datatype of array???
+    # print(type(volume))
     min = 0
     max = 1912.0
     volume[volume < min] = min
