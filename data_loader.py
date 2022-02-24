@@ -171,35 +171,35 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     y_val = np.array([y_val])
     filenames_val = np.array([filenames_val])
 
-    def train_preprocessing(volume, label, paths):
-        """Process training data by rotating and adding a channel."""
-        #volume = augment(volume)
-        volume = tf.expand_dims(volume, axis=3)
-        return volume, label, paths
+    # def train_preprocessing(volume, label, paths):
+    #     """Process training data by rotating and adding a channel."""
+    #     #volume = augment(volume)
+    #     volume = tf.expand_dims(volume, axis=3)
+    #     return volume, label, paths
 
-    def validation_preprocessing(volume, label, paths):
-        """Process validation data by only adding a channel."""
-        volume = tf.expand_dims(volume, axis=3)
-        return volume, label, paths
+    # def validation_preprocessing(volume, label, paths):
+    #     """Process validation data by only adding a channel."""
+    #     volume = tf.expand_dims(volume, axis=3)
+    #     return volume, label, paths
 
     # Define data loaders.
     train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train, filenames_train))
     validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val, filenames_val))
+    return train_loader, validation_loader, x_train, y_train
+    # # Augment the on the fly during training.
+    # train_dataset = (
+    #     train_loader.shuffle(len(x_train))
+    #     .map(train_preprocessing)
+    #     .batch(train_batch_size)
+    #     .prefetch(2)
+    # )
 
-    # Augment the on the fly during training.
-    train_dataset = (
-        train_loader.shuffle(len(x_train))
-        .map(train_preprocessing)
-        .batch(train_batch_size)
-        .prefetch(2)
-    )
+    # # # Only rescale.
+    # validation_dataset = (
+    #     validation_loader.shuffle(len(x_val))
+    #     .map(validation_preprocessing)
+    #     .batch(validation_batch_size)
+    #     .prefetch(2)
+    # )
 
-    # # Only rescale.
-    validation_dataset = (
-        validation_loader.shuffle(len(x_val))
-        .map(validation_preprocessing)
-        .batch(validation_batch_size)
-        .prefetch(2)
-    )
-
-    return train_dataset, validation_dataset
+    # return train_dataset, validation_dataset
