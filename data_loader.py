@@ -32,10 +32,6 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         desired_width = desired_dimensions['full_image']['desired_width']   # mean value for non ROI images is ~220
         desired_height = desired_dimensions['full_image']['desired_height']  # mean value for non ROI images is ~247
 
-    print(desired_depth)
-    print(desired_width)
-    print(desired_height)
-
     zipped_training_data_path = base_training_data_path + '.zip'
     unzipped_training_data_path = base_training_data_path + '/'
 

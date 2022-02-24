@@ -182,10 +182,12 @@ def read_nifti_file(filepath):
 
 def normalize(volume):
     """Normalize the volume"""
-    # min = 0
-    # max = 1912.0
-    # volume[volume < min] = min
-    # volume[volume > max] = max
+    #Do we need these?
+    print(type(volume))
+    min = 0
+    max = 1912.0
+    volume[volume < min] = min
+    volume[volume > max] = max
     volume = (volume - min) / (max - min)
     volume = volume.astype("float32")
     return volume
