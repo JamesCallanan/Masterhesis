@@ -32,6 +32,10 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         desired_width = desired_dimensions['full_image']['desired_width']   # mean value for non ROI images is ~220
         desired_height = desired_dimensions['full_image']['desired_height']  # mean value for non ROI images is ~247
 
+    print(desired_depth)
+    print(desired_width)
+    print(desired_height)
+
     zipped_training_data_path = base_training_data_path + '.zip'
     unzipped_training_data_path = zipped_training_data_path + '/'
 
@@ -78,6 +82,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     filenames_val = []
 
     if 'NOR' in disease_classes:
+        print('NOR entered')
         NOR_training_folder_path = '/content/data/train/NOR/'
         NOR_scan_paths = [ NOR_training_folder_path + x for x in os.listdir(NOR_training_folder_path)]
         NOR_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_height = desired_height, desired_width = desired_width) for path in NOR_scan_paths])
@@ -95,6 +100,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         filenames_val = [*filenames_val, *NOR_scan_paths[16:]]
 
     if 'DCM' in disease_classes:
+        print('DCM entered')
         DCM_training_folder_path = '/content/data/train/DCM/'
         DCM_scan_paths = [ DCM_training_folder_path + x for x in os.listdir(DCM_training_folder_path)]
         DCM_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_height = desired_height, desired_width = desired_width) for path in DCM_scan_paths])
@@ -112,6 +118,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         filenames_val = [*filenames_val, *DCM_scan_paths[16:]]
 
     if 'HCM' in disease_classes:
+        print('HCM entered')
         HCM_training_folder_path = '/content/data/train/HCM/'
         HCM_scan_paths = [ HCM_training_folder_path + x for x in os.listdir(HCM_training_folder_path)]
         HCM_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_height = desired_height, desired_width = desired_width) for path in HCM_scan_paths])
@@ -129,6 +136,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         filenames_val = [*filenames_val, *HCM_scan_paths[16:]]
 
     if 'MINF' in disease_classes:
+        print('MINF entered')
         MINF_training_folder_path = '/content/data/train/MINF/'
         MINF_scan_paths = [ MINF_training_folder_path + x for x in os.listdir(MINF_training_folder_path)]
         MINF_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_height = desired_height, desired_width = desired_width) for path in MINF_scan_paths])
@@ -146,6 +154,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         filenames_val = [*filenames_val, *MINF_scan_paths[16:]]
 
     if 'RV' in disease_classes:
+        print('RV entered')
         RV_training_folder_path = '/content/data/train/RV/'
         RV_scan_paths = [ RV_training_folder_path + x for x in os.listdir(RV_training_folder_path)]
         RV_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_height = desired_height, desired_width = desired_width) for path in RV_scan_paths])
@@ -162,6 +171,13 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         y_val = [*y_val, *RV_labels[16:]]
         filenames_val = [*filenames_val, *RV_scan_paths[16:]]
 
+    print('disease_classes: ', disease_classes)
+    print(len(x_train))
+    print(len(x_val))
+    print(len(y_train))
+    print(len(y_val))
+    print(filenames_train)
+    print(filenames_val)
     #convert to numpy arrays
     x_train = np.array(x_train)
     y_train = np.array(y_train)
