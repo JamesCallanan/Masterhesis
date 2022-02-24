@@ -204,4 +204,4 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         .prefetch(2)
     )
 
-    return train_dataset, validation_dataset
+    return train_dataset, validation_dataset, seg_masks_and_image_paths
