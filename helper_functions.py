@@ -117,11 +117,15 @@ def heart_bounding_box_edge_finder(summed_seg_map):
 
 def move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path, performROI = False):
     patients_data_paths = sorted([x[0] for x in os.walk(unzipped_training_data_path)])[1:] #[1:] removes the current directory /.
+    print(patient_data_paths)
     seg_masks_and_image_paths = {}
 
     for patient_data_path in patients_data_paths:
         patient_name = os.path.basename(patient_data_path)
+        print(patient_name)
         patient_disease_class = config_file_attribute_finder(patient_data_path + '/Info.cfg', Patient_attributes.GROUP.name)
+        print(patient_disease_class)
+
         if patient_disease_class in disease_classes:
 
             ED_frame = config_file_attribute_finder(patient_data_path + '/Info.cfg', Patient_attributes.ED.name)
@@ -137,6 +141,9 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                     heart_MRI_ED_filename = filename
         
             if performROI:
+                print(heart_MRI_ED_gt_filepath)
+                print(heart_MRI_ED_filepath)
+                print(heart_MRI_ED_filename)
                 seg_map = nib.load(heart_MRI_ED_gt_filepath)
                 seg_map = seg_map.get_fdata()
                 summed_seg_map = summed_segmentation_map(seg_map)
