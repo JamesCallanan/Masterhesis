@@ -184,11 +184,11 @@ def normalize(volume):
     """Normalize the volume"""
     #Why does the code not work when we comment out the min and max code - something to do with datatype of array???
     # print(type(volume))
-    min = 0
-    max = 1912.0
-    volume[volume < min] = min
-    volume[volume > max] = max
-    volume = (volume - min) / (max - min)
+    # min = 0
+    # max = 1912.0
+    # volume[volume < min] = min
+    # volume[volume > max] = max
+    volume = (volume - volume.min()) / (volume.max() - volume.min())
     volume = volume.astype("float32")
     return volume
 
@@ -238,7 +238,8 @@ def process_scan(path, desired_depth, desired_width, desired_height):
     # Read scan
     volume = read_nifti_file(path)
     # Normalize
-    volume = normalize(volume) 
+    # volume = normalize(volume) 
+    volume = (volume - volume.min()) / (volume.max() - volume.min())
     # # Pad with zeros to make it square shaped
     #volume = make_slices_square(volume)
     # Resize width, height and depth
