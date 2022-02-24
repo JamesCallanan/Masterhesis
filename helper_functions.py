@@ -119,7 +119,7 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
     print(unzipped_training_data_path)
     print(os.walk(unzipped_training_data_path))
     patients_data_paths = sorted([x[0] for x in os.walk(unzipped_training_data_path)])[1:] #[1:] removes the current directory /.
-    print(patient_data_paths)
+    print(patients_data_paths)
     seg_masks_and_image_paths = {}
 
     for patient_data_path in patients_data_paths:
