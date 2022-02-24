@@ -179,13 +179,13 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     print(filenames_train)
     print(filenames_val)
     #convert to numpy arrays
-    x_train = np.array(x_train)
-    y_train = np.array(y_train)
-    filenames_train = np.array(filenames_train)
+    x_train = np.array([x_train])
+    y_train = np.array([y_train])
+    filenames_train = np.array([filenames_train])
 
-    x_val = np.array(x_val)
-    y_val = np.array(y_val)
-    filenames_val = np.array(filenames_val)
+    x_val = np.array([x_val])
+    y_val = np.array([y_val])
+    filenames_val = np.array([filenames_val])
 
     # def train_preprocessing(volume, label, paths):
     #     """Process training data by rotating and adding a channel."""
