@@ -163,14 +163,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         x_val = [*x_val, *RV_scans[16:]]
         y_val = [*y_val, *RV_labels[16:]]
         filenames_val = [*filenames_val, *RV_scan_paths[16:]]
-
-    print('disease_classes: ', disease_classes)
-    print(len(x_train))
-    print(len(x_val))
-    print(len(y_train))
-    print(len(y_val))
-    print(filenames_train)
-    print(filenames_val)
+        
     #convert to numpy arrays
     x_train = np.array(x_train)
     y_train = np.array(y_train)
@@ -194,7 +187,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     # Define data loaders.
     train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train, filenames_train))
     validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val, filenames_val))
-    return train_loader, validation_loader, x_train, y_train
+    return train_loader, validation_loader, x_train, x_val
     # # Augment the on the fly during training.
     # train_dataset = (
     #     train_loader.shuffle(len(x_train))
