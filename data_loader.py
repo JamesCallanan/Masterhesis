@@ -74,8 +74,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     y_val = []
     filenames_val = []
 
-    if 'NOR' in disease_classes:
-        print('NOR entered')
+    if 'NOR' in disease_classes:        
         NOR_training_folder_path = '/content/data/train/NOR/'
         NOR_scan_paths = [ NOR_training_folder_path + x for x in os.listdir(NOR_training_folder_path)]
         NOR_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in NOR_scan_paths])
@@ -92,8 +91,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         y_val = [*y_val, *NOR_labels[16:]]
         filenames_val = [*filenames_val, *NOR_scan_paths[16:]]
 
-    if 'DCM' in disease_classes:
-        print('DCM entered')
+    if 'DCM' in disease_classes:        
         DCM_training_folder_path = '/content/data/train/DCM/'
         DCM_scan_paths = [ DCM_training_folder_path + x for x in os.listdir(DCM_training_folder_path)]
         DCM_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in DCM_scan_paths])
@@ -110,8 +108,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         y_val = [*y_val, *DCM_labels[16:]]
         filenames_val = [*filenames_val, *DCM_scan_paths[16:]]
 
-    if 'HCM' in disease_classes:
-        print('HCM entered')
+    if 'HCM' in disease_classes:        
         HCM_training_folder_path = '/content/data/train/HCM/'
         HCM_scan_paths = [ HCM_training_folder_path + x for x in os.listdir(HCM_training_folder_path)]
         HCM_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in HCM_scan_paths])
@@ -129,7 +126,6 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         filenames_val = [*filenames_val, *HCM_scan_paths[16:]]
 
     if 'MINF' in disease_classes:
-        print('MINF entered')
         MINF_training_folder_path = '/content/data/train/MINF/'
         MINF_scan_paths = [ MINF_training_folder_path + x for x in os.listdir(MINF_training_folder_path)]
         MINF_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in MINF_scan_paths])
@@ -146,8 +142,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         y_val = [*y_val, *MINF_labels[16:]]
         filenames_val = [*filenames_val, *MINF_scan_paths[16:]]
 
-    if 'RV' in disease_classes:
-        print('RV entered')
+    if 'RV' in disease_classes:       
         RV_training_folder_path = '/content/data/train/RV/'
         RV_scan_paths = [ RV_training_folder_path + x for x in os.listdir(RV_training_folder_path)]
         RV_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in RV_scan_paths])
@@ -185,8 +180,11 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         return volume, label, paths
 
     # Define data loaders.
-    train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train, filenames_train))
-    validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val, filenames_val))
+    train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+    validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val))
+
+    # train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train, filenames_train))
+    # validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val, filenames_val))
 
     # Augment the on the fly during training.
     train_dataset = (
