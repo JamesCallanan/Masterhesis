@@ -168,16 +168,22 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     y_val = np.array(y_val)
     filenames_val = np.array(filenames_val)
 
-    def train_preprocessing(volume, label, paths):
+    def train_preprocessing(volume, label, paths=None):
         """Process training data by rotating and adding a channel."""
         #volume = augment(volume)
         volume = tf.expand_dims(volume, axis=3)
-        return volume, label, paths
+        if paths:
+            return volume, label, paths
+        else:
+            return volume, label
 
-    def validation_preprocessing(volume, label, paths):
+    def validation_preprocessing(volume, label, paths=None):
         """Process validation data by only adding a channel."""
         volume = tf.expand_dims(volume, axis=3)
-        return volume, label, paths
+        if paths:
+            return volume, label, paths
+        else:
+            return volume, label
 
     # Define data loaders.
     train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
