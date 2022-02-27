@@ -209,29 +209,20 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     y_val = np.array(y_val)
     filenames_val = np.array(filenames_val)
 
-    def train_preprocessing(volume, label, paths=None):
+    def train_preprocessing(volume, label):
         """Process training data by rotating and adding a channel."""
         #volume = augment(volume)
         volume = tf.expand_dims(volume, axis=3)
-        if paths:
-            return volume, label, paths
-        else:
-            return volume, label
+        return volume, label
 
-    def validation_preprocessing(volume, label, paths=None):
+    def validation_preprocessing(volume, label):
         """Process validation data by only adding a channel."""
         volume = tf.expand_dims(volume, axis=3)
-        if paths:
-            return volume, label, paths
-        else:
-            return volume, label
+        return volume, label
 
     # Define data loaders.
-    #train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
-    #validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val))
-
-    train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train, filenames_train))
-    validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val, filenames_val))
+    train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+    validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val))
 
     # Augment the on the fly during training.
     train_dataset = (
