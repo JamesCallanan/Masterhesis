@@ -245,6 +245,18 @@ def process_scan(path, desired_depth, desired_width, desired_height):
     volume = resize_volume(volume, desired_depth, desired_width, desired_height)
     return volume
 
+def process_seg_mask(path, desired_depth, desired_width, desired_height):
+    """Read and resize volume"""
+    # Read scan
+    volume = read_nifti_file(path)
+    # Want a different fn than normalise so that we have a binary mask
+    ####
+    ####
+    ####
+    # Resize width, height and depth
+    volume = resize_volume(volume, desired_depth, desired_width, desired_height)
+    return volume
+
 
 
 
