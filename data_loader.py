@@ -89,7 +89,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
         elif len(disease_classes) > 2:
-            NOR_labels = np.array([ [0.0, 1.0, 0.0, 0.0, 0.0] for _ in range(len(NOR_scans))])
+            NOR_label_layer = np.zeros((90,90,1))
             NOR_label_layer[0,:,:] = 1.0
             NOR_labels = np.array([np.concatenate((process_scan(path),NOR_label_layer),axis=-1) for path in NOR_scan_paths])
         
@@ -113,7 +113,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
         elif len(disease_classes) > 2:
-            DCM_labels = np.array([ [0.0, 1.0, 0.0, 0.0, 0.0] for _ in range(len(DCM_scans))])
+            DCM_label_layer = np.zeros((90,90,1))
             DCM_label_layer[1,:,:] = 1.0
             DCM_labels = np.array([np.concatenate((process_scan(path),DCM_label_layer),axis=-1) for path in DCM_scan_paths]) 
 
@@ -137,7 +137,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
         elif len(disease_classes) > 2:
-            HCM_labels = np.array([ [0.0, 1.0, 0.0, 0.0, 0.0] for _ in range(len(HCM_scans))])
+            HCM_label_layer = np.zeros((90,90,1))
             HCM_label_layer[1,:,:] = 1.0
             HCM_labels = np.array([np.concatenate((process_scan(path),HCM_label_layer),axis=-1) for path in HCM_scan_paths])
         
@@ -161,8 +161,8 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
         elif len(disease_classes) > 2:
-            MINF_labels = np.array([ [0.0, 1.0, 0.0, 0.0, 0.0] for _ in range(len(MINF_scans))])
-            MINF_label_layer[1,:,:] = 1
+            MINF_label_layer = np.zeros((90,90,1)))
+            MINF_label_layer[1,:,:] = 1.0
             MINF_labels = np.array([np.concatenate((process_scan(path),MINF_label_layer),axis=-1) for path in MINF_scan_paths])
 
         x_train = [*x_train, *MINF_scans[:16]]
@@ -186,8 +186,8 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
         elif len(disease_classes) > 2:
-            RV_labels = np.array([ [0.0, 1.0, 0.0, 0.0, 0.0] for _ in range(len(RV_scans))])
-            RV_label_layer[1,:,:] = 1
+            RV_label_layer = np.zeros((90,90,1))            
+            RV_label_layer[1,:,:] = 1.0
             RV_labels = np.array([np.concatenate((process_scan(path),RV_label_layer),axis=-1) for path in RV_scan_paths])
         
         x_train = [*x_train, *RV_scans[:16]]
