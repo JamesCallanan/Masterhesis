@@ -161,7 +161,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
         elif len(disease_classes) > 2:
-            MINF_label_layer = np.zeros((90,90,1)))
+            MINF_label_layer = np.zeros((90,90,1))
             MINF_label_layer[1,:,:] = 1.0
             MINF_labels = np.array([np.concatenate((process_scan(path),MINF_label_layer),axis=-1) for path in MINF_scan_paths])
 
