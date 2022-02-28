@@ -84,7 +84,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         NOR_scan_paths = [ NOR_training_folder_path + x for x in os.listdir(NOR_training_folder_path)]
         NOR_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in NOR_scan_paths])
         if len(disease_classes) == 2:
-            NOR_label_layer = np.full((90,90,1),binary_classification_label)
+            NOR_label_layer = np.full((45,45,1),binary_classification_label)
             NOR_labels = np.array([ np.concatenate((process_scan(path, desired_depth = 5, desired_height = 45, desired_width = 45),NOR_label_layer),axis=-1) for path in NOR_scan_paths ])
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
@@ -107,7 +107,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         DCM_scan_paths = [ DCM_training_folder_path + x for x in os.listdir(DCM_training_folder_path)]
         DCM_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in DCM_scan_paths])
         if len(disease_classes) == 2:
-            DCM_label_layer = np.full((90,90,1),binary_classification_label)
+            DCM_label_layer = np.full((45,45,1),binary_classification_label)
             DCM_labels = np.array([ np.concatenate((process_scan(path, desired_depth = 5, desired_height = 45, desired_width = 45),DCM_label_layer),axis=-1) for path in NOR_scan_paths ])
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
@@ -131,7 +131,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         HCM_scan_paths = [ HCM_training_folder_path + x for x in os.listdir(HCM_training_folder_path)]
         HCM_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in HCM_scan_paths])
         if len(disease_classes) == 2:
-            HCM_label_layer = np.full((90,90,1),binary_classification_label)
+            HCM_label_layer = np.full((45,45,1),binary_classification_label)
             HCM_labels = np.array([ np.concatenate((process_scan(path, desired_depth = 5, desired_height = 45, desired_width = 45),HCM_label_layer),axis=-1) for path in NOR_scan_paths ])
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
@@ -155,7 +155,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         MINF_scan_paths = [ MINF_training_folder_path + x for x in os.listdir(MINF_training_folder_path)]
         MINF_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in MINF_scan_paths])
         if len(disease_classes) == 2:
-            MINF_label_layer = np.full((90,90,1),binary_classification_label)
+            MINF_label_layer = np.full((45,45,1),binary_classification_label)
             MINF_labels = np.array([ np.concatenate((process_scan(path, desired_depth = 5, desired_height = 45, desired_width = 45),MINF_label_layer),axis=-1) for path in NOR_scan_paths ])
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
@@ -180,7 +180,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         RV_scan_paths = [ RV_training_folder_path + x for x in os.listdir(RV_training_folder_path)]
         RV_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in RV_scan_paths])
         if len(disease_classes) == 2:
-            RV_label_layer = np.full((90,90,1),binary_classification_label)
+            RV_label_layer = np.full((45,45,1),binary_classification_label)
             RV_labels = np.array([ np.concatenate((process_scan(path, desired_depth = 5, desired_height = 45, desired_width = 45),RV_label_layer),axis=-1) for path in NOR_scan_paths ])
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
