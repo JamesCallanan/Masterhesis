@@ -181,13 +181,13 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         RV_scans = np.array([process_scan( path , desired_depth = 10, desired_height = 90, desired_width = 90) for path in RV_scan_paths])
         if len(disease_classes) == 2:
             RV_label_layer = np.full((45,45,1),binary_classification_label)
-            RV_labels = np.array([ np.concatenate( ( (process_scan(seg_masks_and_image_paths[path], desired_depth = 5, desired_height = 45, desired_width = 45) == 0 ) , RV_label_layer ) , a xis=-1)  for path in NOR_scan_paths ])
+            RV_labels = np.array([ np.concatenate( ( (process_scan(seg_masks_and_image_paths[path], desired_depth = 5, desired_height = 45, desired_width = 45) == 0 ) , RV_label_layer ) , axis=-1)  for path in NOR_scan_paths ])
             binary_classification_label = binary_classification_label + 1   #increment for next use
 
         elif len(disease_classes) > 2:
             RV_label_layer = np.zeros((90,90,1))            
             RV_label_layer[0,0,:] = 4.0
-            RV_labels = np.array([np.concatenate( ( (process_scan(seg_masks_and_image_paths[path], desired_depth = 5, desired_height = 45, desired_width = 45) == 0 ) , RV_label_layer ) , a xis=-1)  for path in RV_scan_paths])
+            RV_labels = np.array([np.concatenate( ( (process_scan(seg_masks_and_image_paths[path], desired_depth = 5, desired_height = 45, desired_width = 45) == 0 ) , RV_label_layer ) , axis=-1)  for path in RV_scan_paths])
         
         x_train = [*x_train, *RV_scans[:16]]
         y_train = [*y_train, *RV_labels[:16]]
