@@ -261,7 +261,7 @@ def resize_volume(img, desired_depth, desired_width, desired_height):
     # Rotate
     #img = ndimage.rotate(img, 90, reshape=False)
     # Resize across z-axis
-    img = ndimage.zoom(img, (height_factor, width_factor, depth_factor), order=1)
+    img = ndimage.zoom(img, (width_factor, height_factor, depth_factor), order=1)
     return img
 
 def process_scan(path, desired_depth, desired_width, desired_height):
@@ -273,7 +273,7 @@ def process_scan(path, desired_depth, desired_width, desired_height):
     # # Pad with zeros to make it square shaped
     #volume = make_slices_square(volume)
     # Resize width, height and depth
-    volume = resize_volume(volume, desired_depth, desired_width, desired_height)
+    volume = resize_volume(volume, desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height)
     return volume
 
 
