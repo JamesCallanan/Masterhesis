@@ -4,7 +4,7 @@ import nibabel as nib
 import shutil
 import numpy as np
 from scipy import ndimage
-from config import training_directory, validation_directory
+from config import training_directory, validation_directory, number_of_patients_per_class
 
 
 # Stores keys needed to retrieve values from the patient's info.cfg files
@@ -118,7 +118,6 @@ def heart_bounding_box_edge_finder(summed_seg_map):
 
 def move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path, perform_ROI = False, hide_pixels_outside_heart_train = False, hide_pixels_outside_heart_val = False, num_validation_images = 4):
     validation_modulo_image_indexes = list( range( 1 , num_validation_images + 1 ) ) #represents numbers of a given disease class which will be moved to validation dataset e.g. 1rst image, thus patients with no's 001,021,041 ... will be moved as they will all give a value of 1 when modulo-ed with number of patients per disease class (20) 
-    number_of_patients_per_class = 20
     patients_data_paths = sorted([x[0] for x in os.walk(unzipped_training_data_path)])[1:] #[1:] removes the current directory /.
     seg_masks_and_image_paths = {}
 

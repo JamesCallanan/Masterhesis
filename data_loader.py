@@ -5,7 +5,7 @@ from augmentations import augment
 import tensorflow as tf
 import numpy as np
 from random import seed
-from config import training_directory, validation_directory, datasets_wanted
+from config import training_directory, validation_directory, datasets_wanted, base_training_data_path
 
 ###########################################################################################################################
 # Parameters to set
@@ -22,7 +22,6 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
                                                                             },
                                                     hide_pixels_outside_heart_train = False,
                                                     hide_pixels_outside_heart_val = False,
-                                                    base_training_data_path = '/content/training',
                                                     num_validation_images = 4
                                                 ):
                             
