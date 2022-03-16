@@ -115,7 +115,7 @@ def heart_bounding_box_edge_finder(summed_seg_map):
 
 # Fn also returns a dictionary that contains a list of paths to the images that have been moved to the data/train directory and their corresponding ground truth (gt) segmentation maps in the base_training_data_path 
 
-def move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path, performROI = False):
+def move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path, performROI = False, hidePixelsOutsideHeart = False):
     patients_data_paths = sorted([x[0] for x in os.walk(unzipped_training_data_path)])[1:] #[1:] removes the current directory /.
     print(patients_data_paths)
     seg_masks_and_image_paths = {}
@@ -145,6 +145,9 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                 heart_img = nib.load(heart_MRI_ED_filepath)
                 heart_img = heart_img.get_fdata()
 
+                if hidePixelsOutsideHeart:
+                  heart_img = heart_img*summed_seg_map
+
                 first_row, last_row, first_col, last_col = heart_bounding_box_edge_finder(summed_seg_map)
 
                 cropped_seg_mask = seg_map[first_row:last_row , first_col:last_col]
@@ -166,9 +169,27 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                 seg_masks_and_image_paths[destination_directory + roi_filename] = cropped_seg_filepath
             
             else:
-                destination_directory = '/content/data/train/' + patient_disease_class 
-                shutil.move(heart_MRI_ED_filepath, destination_directory)
-                seg_masks_and_image_paths[destination_directory + heart_MRI_ED_filename] = heart_MRI_ED_gt_filepath
+                if hidePixelsOutsideHeart:
+                  seg_map = nib.load(heart_MRI_ED_gt_filepath)
+                  seg_map = seg_map.get_fdata()
+                  summed_seg_map = summed_segmentation_map(seg_map)
+                  
+                  heart_img = nib.load(heart_MRI_ED_filepath)
+                  heart_img = heart_img.get_fdata()
+                  heart_img = heart_img*summed_seg_map
+
+                  filtered_heart_img = nib.Nifti1Image(heart_img, np.eye(4))
+                  filtered_heart_filename = '/filtered_' + patient_name + '.nii.gz'
+                  filtered_heart_filepath = patient_data_path + filtered_heart_filename
+                  nib.save(filtered_heart_img, filtered_heart_filepath)
+
+                  destination_directory = '/content/data/train/' + patient_disease_class 
+                  shutil.move(filtered_heart_filepath, destination_directory)
+                  seg_masks_and_image_paths[destination_directory + heart_MRI_ED_filename] = heart_MRI_ED_gt_filepath 
+                else:
+                  destination_directory = '/content/data/train/' + patient_disease_class 
+                  shutil.move(heart_MRI_ED_filepath, destination_directory)
+                  seg_masks_and_image_paths[destination_directory + heart_MRI_ED_filename] = heart_MRI_ED_gt_filepath
     return seg_masks_and_image_paths
 
 
