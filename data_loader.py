@@ -5,6 +5,7 @@ from augmentations import augment
 import tensorflow as tf
 import numpy as np
 from random import seed
+from config import training_directory, validation_directory, datasets_wanted
 
 ###########################################################################################################################
 # Parameters to set
@@ -15,15 +16,17 @@ from random import seed
 def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', 'NOR' ],
                                                     train_batch_size = 10,
                                                     validation_batch_size = 8,
-                                                    performROI = False, 
+                                                    perform_ROI = False, 
                                                     desired_dimensions =    {  'ROI'           :   {'desired_depth': 10, 'desired_width': 90, 'desired_height': 90 }, 
                                                                                 'full_image'    :   {'desired_depth': 10, 'desired_width': 220, 'desired_height': 250 }
                                                                             },
-                                                    subdirs = ['train/'],
-                                                    base_training_data_path = '/content/training'
+                                                    hide_pixels_outside_heart_train = False,
+                                                    hide_pixels_outside_heart_val = False,
+                                                    base_training_data_path = '/content/training',
+                                                    num_validation_images = 4
                                                 ):
                             
-    if performROI:
+    if perform_ROI:
         desired_depth = desired_dimensions['ROI']['desired_depth']     
         desired_width = desired_dimensions['ROI']['desired_width']   # mean value for ROI images with buffer 8 is ~90 (I think)
         desired_height = desired_dimensions['ROI']['desired_height']  # mean value for ROI images with buffer 8 is ~90 (I think) ? Not exactly 90
@@ -49,15 +52,15 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     # Create training directory and subdirectories for each disease class in disease_classes array
 
     model_training_dataset_path = '/content/data/'  #this directory will only contain a selection of the ACDC dataset which will be used for training our model. e.g. only MRI data from End Diastole phase
-    for subdir in subdirs: 
+    for dataset_dir in datasets_wanted: 
         for disease_class in disease_classes: 
-            newdir = model_training_dataset_path + subdir + disease_class 
+            newdir = model_training_dataset_path + dataset_dir + disease_class 
             os.makedirs(newdir)
 
     # ###########################################################################################################################
     # # Fn only moves images corresponding to disease classes in disease_classes array into the data/train directory
     # # Fn also returns a dictionary that contains a list of paths to the images that have been moved to the data/train directory and their corresponding ground truth (gt) segmentation maps in the unzipped_training_data_path 
-    seg_masks_and_image_paths = move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path = unzipped_training_data_path, performROI = performROI)
+    seg_masks_and_image_paths = move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path = unzipped_training_data_path, perform_ROI = perform_ROI, hide_pixels_outside_heart_train = hide_pixels_outside_heart_train, hide_pixels_outside_heart_val = hide_pixels_outside_heart_val, num_validation_images = num_validation_images)
     # ###########################################################################################################################
 
     # # Call process_scan on each file in train_data path scan is resized across height, width, and depth and rescaled.
@@ -75,89 +78,129 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     filenames_val = []
 
     if 'NOR' in disease_classes:        
-        NOR_training_folder_path = '/content/data/train/NOR/'
-        NOR_scan_paths = [ NOR_training_folder_path + x for x in os.listdir(NOR_training_folder_path)]
-        NOR_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in NOR_scan_paths])
+        NOR_training_folder_path = training_directory + 'NOR/'
+        NOR_train_scan_paths = [ NOR_training_folder_path + x for x in os.listdir(NOR_training_folder_path)]
+        NOR_train_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in NOR_train_scan_paths])
         if len(disease_classes) == 2:
-            NOR_labels = np.array([ binary_classification_label for _ in range(len(NOR_scans))])
+            NOR_labels = np.array([ binary_classification_label for _ in range(len(NOR_train_scans))])
             binary_classification_label = binary_classification_label + 1   #increment for next use
         elif len(disease_classes) > 2:
-            NOR_labels = np.array([ [1.0, 0.0, 0.0, 0.0, 0.0] for _ in range(len(NOR_scans))])
-        x_train = [*x_train, *NOR_scans[:16]]
-        y_train = [*y_train, *NOR_labels[:16]]
-        filenames_train = [*filenames_train, *NOR_scan_paths[:16]]
+            NOR_labels = np.array([ [1.0, 0.0, 0.0, 0.0, 0.0] for _ in range(len(NOR_train_scans))])
+        x_train = [*x_train, *NOR_train_scans]
+        y_train = [*y_train, *NOR_labels]
+        filenames_train = [*filenames_train, *NOR_train_scan_paths]
 
-        x_val = [*x_val, *NOR_scans[16:]]
-        y_val = [*y_val, *NOR_labels[16:]]
-        filenames_val = [*filenames_val, *NOR_scan_paths[16:]]
+        NOR_val_folder_path = validation_directory + 'NOR/'
+        NOR_val_scan_paths = [ NOR_val_folder_path + x for x in os.listdir(NOR_val_folder_path)]
+        NOR_val_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in NOR_val_scan_paths])
+        if len(disease_classes) == 2:
+            NOR_labels = np.array([ binary_classification_label for _ in range(len(NOR_val_scans))])
+            binary_classification_label = binary_classification_label + 1   #increment for next use
+        elif len(disease_classes) > 2:
+            NOR_labels = np.array([ [1.0, 0.0, 0.0, 0.0, 0.0] for _ in range(len(NOR_val_scans))])
+        x_val = [*x_val, *NOR_val_scans]
+        y_val = [*y_val, *NOR_labels]
+        filenames_val = [*filenames_val, *NOR_val_scan_paths]
 
     if 'DCM' in disease_classes:        
-        DCM_training_folder_path = '/content/data/train/DCM/'
-        DCM_scan_paths = [ DCM_training_folder_path + x for x in os.listdir(DCM_training_folder_path)]
-        DCM_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in DCM_scan_paths])
+        DCM_training_folder_path = training_directory + 'DCM/'
+        DCM_train_scan_paths = [ DCM_training_folder_path + x for x in os.listdir(DCM_training_folder_path)]
+        DCM_train_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in DCM_train_scan_paths])
         if len(disease_classes) == 2:
-            DCM_labels = np.array([ binary_classification_label for _ in range(len(DCM_scans))])
+            DCM_labels = np.array([ binary_classification_label for _ in range(len(DCM_train_scans))])
             binary_classification_label = binary_classification_label + 1   #increment for next use
         elif len(disease_classes) > 2:
-            DCM_labels = np.array([ [0.0, 1.0, 0.0, 0.0, 0.0] for _ in range(len(DCM_scans))])
-        x_train = [*x_train, *DCM_scans[:16]]
-        y_train = [*y_train, *DCM_labels[:16]]
-        filenames_train = [*filenames_train, *DCM_scan_paths[:16]]
+            DCM_labels = np.array([ [0.0, 1.0, 0.0, 0.0, 0.0] for _ in range(len(DCM_train_scans))])
+        x_train = [*x_train, *DCM_train_scans]
+        y_train = [*y_train, *DCM_labels]
+        filenames_train = [*filenames_train, *DCM_train_scan_paths]
 
-        x_val = [*x_val, *DCM_scans[16:]]
-        y_val = [*y_val, *DCM_labels[16:]]
-        filenames_val = [*filenames_val, *DCM_scan_paths[16:]]
+        DCM_val_folder_path = validation_directory + 'DCM/'
+        DCM_val_scan_paths = [ DCM_val_folder_path + x for x in os.listdir(DCM_val_folder_path)]
+        DCM_val_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in DCM_val_scan_paths])
+        if len(disease_classes) == 2:
+            DCM_labels = np.array([ binary_classification_label for _ in range(len(DCM_val_scans))])
+            binary_classification_label = binary_classification_label + 1   #increment for next use
+        elif len(disease_classes) > 2:
+            DCM_labels = np.array([ [0.0, 1.0, 0.0, 0.0, 0.0] for _ in range(len(DCM_val_scans))])
+        x_val = [*x_val, *DCM_val_scans]
+        y_val = [*y_val, *DCM_labels]
+        filenames_val = [*filenames_val, *DCM_val_scan_paths]
 
     if 'HCM' in disease_classes:        
-        HCM_training_folder_path = '/content/data/train/HCM/'
-        HCM_scan_paths = [ HCM_training_folder_path + x for x in os.listdir(HCM_training_folder_path)]
-        HCM_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in HCM_scan_paths])
+        HCM_training_folder_path = training_directory + 'HCM/'
+        HCM_train_scan_paths = [ HCM_training_folder_path + x for x in os.listdir(HCM_training_folder_path)]
+        HCM_train_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in HCM_train_scan_paths])
         if len(disease_classes) == 2:
-            HCM_labels = np.array([ binary_classification_label for _ in range(len(HCM_scans))])
+            HCM_labels = np.array([ binary_classification_label for _ in range(len(HCM_train_scans))])
             binary_classification_label = binary_classification_label + 1   #increment for next use
         elif len(disease_classes) > 2:
-            HCM_labels = np.array([ [0.0, 0.0, 1.0, 0.0, 0.0] for _ in range(len(HCM_scans))])
-        x_train = [*x_train, *HCM_scans[:16]]
-        y_train = [*y_train, *HCM_labels[:16]]
-        filenames_train = [*filenames_train, *HCM_scan_paths[:16]]
+            HCM_labels = np.array([ [0.0, 0.0, 1.0, 0.0, 0.0] for _ in range(len(HCM_train_scans))])
+        x_train = [*x_train, *HCM_train_scans]
+        y_train = [*y_train, *HCM_labels]
+        filenames_train = [*filenames_train, *HCM_train_scan_paths]
 
-        x_val = [*x_val, *HCM_scans[16:]]
-        y_val = [*y_val, *HCM_labels[16:]]
-        filenames_val = [*filenames_val, *HCM_scan_paths[16:]]
-
-    if 'MINF' in disease_classes:
-        MINF_training_folder_path = '/content/data/train/MINF/'
-        MINF_scan_paths = [ MINF_training_folder_path + x for x in os.listdir(MINF_training_folder_path)]
-        MINF_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in MINF_scan_paths])
+        HCM_val_folder_path = validation_directory + 'HCM/'
+        HCM_val_scan_paths = [ HCM_val_folder_path + x for x in os.listdir(HCM_val_folder_path)]
+        HCM_val_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in HCM_val_scan_paths])
         if len(disease_classes) == 2:
-            MINF_labels = np.array([ binary_classification_label for _ in range(len(MINF_scans))])
+            HCM_labels = np.array([ binary_classification_label for _ in range(len(HCM_val_scans))])
             binary_classification_label = binary_classification_label + 1   #increment for next use
         elif len(disease_classes) > 2:
-            MINF_labels = np.array([ [0.0, 0.0, 0.0, 1.0, 0.0] for _ in range(len(MINF_scans))])
-        x_train = [*x_train, *MINF_scans[:16]]
-        y_train = [*y_train, *MINF_labels[:16]]
-        filenames_train = [*filenames_train, *MINF_scan_paths[:16]]
+            HCM_labels = np.array([ [0.0, 0.0, 1.0, 0.0, 0.0] for _ in range(len(HCM_val_scans))])
+        x_val = [*x_val, *HCM_val_scans]
+        y_val = [*y_val, *HCM_labels]
+        filenames_val = [*filenames_val, *HCM_val_scan_paths]
 
-        x_val = [*x_val, *MINF_scans[16:]]
-        y_val = [*y_val, *MINF_labels[16:]]
-        filenames_val = [*filenames_val, *MINF_scan_paths[16:]]
-
-    if 'RV' in disease_classes:       
-        RV_training_folder_path = '/content/data/train/RV/'
-        RV_scan_paths = [ RV_training_folder_path + x for x in os.listdir(RV_training_folder_path)]
-        RV_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in RV_scan_paths])
+    if 'MINF' in disease_classes:        
+        MINF_training_folder_path = training_directory + 'MINF/'
+        MINF_train_scan_paths = [ MINF_training_folder_path + x for x in os.listdir(MINF_training_folder_path)]
+        MINF_train_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in MINF_train_scan_paths])
         if len(disease_classes) == 2:
-            RV_labels = np.array([ binary_classification_label for _ in range(len(RV_scans))])
+            MINF_labels = np.array([ binary_classification_label for _ in range(len(MINF_train_scans))])
             binary_classification_label = binary_classification_label + 1   #increment for next use
         elif len(disease_classes) > 2:
-            RV_labels = np.array([ [0.0, 0.0, 0.0, 0.0, 1.0] for _ in range(len(RV_scans))])
-        x_train = [*x_train, *RV_scans[:16]]
-        y_train = [*y_train, *RV_labels[:16]]
-        filenames_train = [*filenames_train, *RV_scan_paths[:16]]
+            MINF_labels = np.array([ [0.0, 0.0, 0.0, 1.0, 0.0] for _ in range(len(MINF_train_scans))])
+        x_train = [*x_train, *MINF_train_scans]
+        y_train = [*y_train, *MINF_labels]
+        filenames_train = [*filenames_train, *MINF_train_scan_paths]
 
-        x_val = [*x_val, *RV_scans[16:]]
-        y_val = [*y_val, *RV_labels[16:]]
-        filenames_val = [*filenames_val, *RV_scan_paths[16:]]
+        MINF_val_folder_path = validation_directory + 'MINF/'
+        MINF_val_scan_paths = [ MINF_val_folder_path + x for x in os.listdir(MINF_val_folder_path)]
+        MINF_val_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in MINF_val_scan_paths])
+        if len(disease_classes) == 2:
+            MINF_labels = np.array([ binary_classification_label for _ in range(len(MINF_val_scans))])
+            binary_classification_label = binary_classification_label + 1   #increment for next use
+        elif len(disease_classes) > 2:
+            MINF_labels = np.array([ [0.0, 0.0, 0.0, 1.0, 0.0] for _ in range(len(MINF_val_scans))])
+        x_val = [*x_val, *MINF_val_scans]
+        y_val = [*y_val, *MINF_labels]
+        filenames_val = [*filenames_val, *MINF_val_scan_paths]
+
+    if 'RV' in disease_classes:        
+        RV_training_folder_path = training_directory + 'RV/'
+        RV_train_scan_paths = [ RV_training_folder_path + x for x in os.listdir(RV_training_folder_path)]
+        RV_train_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in RV_train_scan_paths])
+        if len(disease_classes) == 2:
+            RV_labels = np.array([ binary_classification_label for _ in range(len(RV_train_scans))])
+            binary_classification_label = binary_classification_label + 1   #increment for next use
+        elif len(disease_classes) > 2:
+            RV_labels = np.array([ [0.0, 0.0, 0.0, 0.0, 1.0] for _ in range(len(RV_train_scans))])
+        x_train = [*x_train, *RV_train_scans]
+        y_train = [*y_train, *RV_labels]
+        filenames_train = [*filenames_train, *RV_train_scan_paths]
+
+        RV_val_folder_path = validation_directory + 'RV/'
+        RV_val_scan_paths = [ RV_val_folder_path + x for x in os.listdir(RV_val_folder_path)]
+        RV_val_scans = np.array([process_scan( path , desired_depth, desired_height, desired_width) for path in RV_val_scan_paths])
+        if len(disease_classes) == 2:
+            RV_labels = np.array([ binary_classification_label for _ in range(len(RV_val_scans))])
+            binary_classification_label = binary_classification_label + 1   #increment for next use
+        elif len(disease_classes) > 2:
+            RV_labels = np.array([ [0.0, 0.0, 0.0, 0.0, 1.0] for _ in range(len(RV_val_scans))])
+        x_val = [*x_val, *RV_val_scans]
+        y_val = [*y_val, *RV_labels]
+        filenames_val = [*filenames_val, *RV_val_scan_paths]
         
     #convert to numpy arrays
     x_train = np.array(x_train)
