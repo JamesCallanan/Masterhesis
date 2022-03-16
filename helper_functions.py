@@ -116,7 +116,7 @@ def heart_bounding_box_edge_finder(summed_seg_map):
 
 # Fn also returns a dictionary that contains a list of paths to the images that have been moved to the data/train directory and their corresponding ground truth (gt) segmentation maps in the base_training_data_path 
 
-def move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path, performROI = False, hidePixelsOutsideHeart_train = False, hidePixelsOutsideHeart_val = False, num_validation_images = 4):
+def move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path, perform_ROI = False, hide_pixels_outside_heart_train = False, hide_pixels_outside_heart_val = False, num_validation_images = 4):
     validation_modulo_image_indexes = list( range( 1 , num_validation_images + 1 ) ) #represents numbers of a given disease class which will be moved to validation dataset e.g. 1rst image, thus patients with no's 001,021,041 ... will be moved as they will all give a value of 1 when modulo-ed with number of patients per disease class (20) 
     number_of_patients_per_class = 20
     patients_data_paths = sorted([x[0] for x in os.walk(unzipped_training_data_path)])[1:] #[1:] removes the current directory /.
@@ -128,10 +128,10 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
         
         if patient_number % number_of_patients_per_class in validation_modulo_image_indexes:
           root_destination_directory = validation_directory
-          hide_pixels_outside_heart = hidePixelsOutsideHeart_val
+          hide_pixels_outside_heart = hide_pixels_outside_heart_val
         else:
           root_destination_directory = training_directory
-          hide_pixels_outside_heart = hidePixelsOutsideHeart_train
+          hide_pixels_outside_heart = hide_pixels_outside_heart_train
 
         patient_disease_class = config_file_attribute_finder(patient_data_path + '/Info.cfg', Patient_attributes.GROUP.name)
 
@@ -148,7 +148,7 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                     heart_MRI_ED_filepath = patient_data_path + '/' + filename
                     heart_MRI_ED_filename = filename
         
-            if performROI:
+            if perform_ROI:
                 seg_map = nib.load(heart_MRI_ED_gt_filepath)
                 seg_map = seg_map.get_fdata()
                 summed_seg_map = summed_segmentation_map(seg_map)

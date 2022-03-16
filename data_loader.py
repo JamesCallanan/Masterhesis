@@ -5,7 +5,7 @@ from augmentations import augment
 import tensorflow as tf
 import numpy as np
 from random import seed
-from config import training_directory, validation_directory
+from config import training_directory, validation_directory, datasets_wanted
 
 ###########################################################################################################################
 # Parameters to set
@@ -16,18 +16,17 @@ from config import training_directory, validation_directory
 def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', 'NOR' ],
                                                     train_batch_size = 10,
                                                     validation_batch_size = 8,
-                                                    performROI = False, 
+                                                    perform_ROI = False, 
                                                     desired_dimensions =    {  'ROI'           :   {'desired_depth': 10, 'desired_width': 90, 'desired_height': 90 }, 
                                                                                 'full_image'    :   {'desired_depth': 10, 'desired_width': 220, 'desired_height': 250 }
                                                                             },
-                                                    hidePixelsOutsideHeart_train = False,
-                                                    hidePixelsOutsideHeart_val = False,
-                                                    subdirs = ['train/'],
+                                                    hide_pixels_outside_heart_train = False,
+                                                    hide_pixels_outside_heart_val = False,
                                                     base_training_data_path = '/content/training',
                                                     num_validation_images = 4
                                                 ):
                             
-    if performROI:
+    if perform_ROI:
         desired_depth = desired_dimensions['ROI']['desired_depth']     
         desired_width = desired_dimensions['ROI']['desired_width']   # mean value for ROI images with buffer 8 is ~90 (I think)
         desired_height = desired_dimensions['ROI']['desired_height']  # mean value for ROI images with buffer 8 is ~90 (I think) ? Not exactly 90
@@ -53,15 +52,15 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     # Create training directory and subdirectories for each disease class in disease_classes array
 
     model_training_dataset_path = '/content/data/'  #this directory will only contain a selection of the ACDC dataset which will be used for training our model. e.g. only MRI data from End Diastole phase
-    for subdir in subdirs: 
+    for dataset_dir in datasets_wanted: 
         for disease_class in disease_classes: 
-            newdir = model_training_dataset_path + subdir + disease_class 
+            newdir = model_training_dataset_path + dataset_dir + disease_class 
             os.makedirs(newdir)
 
     # ###########################################################################################################################
     # # Fn only moves images corresponding to disease classes in disease_classes array into the data/train directory
     # # Fn also returns a dictionary that contains a list of paths to the images that have been moved to the data/train directory and their corresponding ground truth (gt) segmentation maps in the unzipped_training_data_path 
-    seg_masks_and_image_paths = move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path = unzipped_training_data_path, performROI = performROI, hidePixelsOutsideHeart_train = hidePixelsOutsideHeart_train, hidePixelsOutsideHeart_val = hidePixelsOutsideHeart_val, num_validation_images = num_validation_images)
+    seg_masks_and_image_paths = move_some_training_files_to_data_train_directory(disease_classes, unzipped_training_data_path = unzipped_training_data_path, perform_ROI = perform_ROI, hide_pixels_outside_heart_train = hide_pixels_outside_heart_train, hide_pixels_outside_heart_val = hide_pixels_outside_heart_val, num_validation_images = num_validation_images)
     # ###########################################################################################################################
 
     # # Call process_scan on each file in train_data path scan is resized across height, width, and depth and rescaled.
