@@ -146,7 +146,7 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                 heart_img = heart_img.get_fdata()
 
                 if hidePixelsOutsideHeart:
-                  heart_img = heart_img*np.stack((summed_seg_map,)*heart_img.shape[-1], -1)
+                  heart_img = heart_img*(seg_map[:,:,:] != 0)
 
                 first_row, last_row, first_col, last_col = heart_bounding_box_edge_finder(summed_seg_map)
 
@@ -176,8 +176,7 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                   
                   heart_img = nib.load(heart_MRI_ED_filepath)
                   heart_img = heart_img.get_fdata()
-                  heart_img = heart_img*np.stack((summed_seg_map,)*heart_img.shape[-1], -1)
-
+                  heart_img = heart_img*(seg_map[:,:,:] != 0)
 
                   filtered_heart_img = nib.Nifti1Image(heart_img, np.eye(4))
                   filtered_heart_filename = '/filtered_' + patient_name + '.nii.gz'
