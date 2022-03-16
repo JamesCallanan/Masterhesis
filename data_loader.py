@@ -5,9 +5,7 @@ from augmentations import augment
 import tensorflow as tf
 import numpy as np
 from random import seed
-
-training_directory = '/content/data/train/'
-validation_directory = '/content/data/validation/'
+from config import training_directory, validation_directory
 
 ###########################################################################################################################
 # Parameters to set

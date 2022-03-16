@@ -4,7 +4,7 @@ import nibabel as nib
 import shutil
 import numpy as np
 from scipy import ndimage
-from data_loader import training_directory, validation_directory
+from config import training_directory, validation_directory
 
 
 # Stores keys needed to retrieve values from the patient's info.cfg files
