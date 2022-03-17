@@ -34,7 +34,7 @@ def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer
         heart_mri_path = filenames[i].numpy().decode('utf-8') #need to access filepath which is stored as a string in tensor object # for i, image in enumerate(images):  
         
         seg_mask_path = seg_masks_and_image_paths[heart_mri_path]
-        segmentation_mask = process_seg_mask(seg_mask_path, height = height, width = width, depth = depth))
+        segmentation_mask = process_seg_mask(seg_mask_path, height = height, width = width, depth = depth)
         summed_seg_map = segmentation_mask != 0
 
         with tf.GradientTape() as tape:
