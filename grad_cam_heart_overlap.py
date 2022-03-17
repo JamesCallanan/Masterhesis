@@ -50,7 +50,7 @@ def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer
         cam = np.zeros(last_conv_layer_output.shape[0:3], dtype=np.float32)
         for index, w in enumerate(pooled_grads):
             cam += w * last_conv_layer_output[:, :, :, index]
-        capi = resize_volume(cam, height = height, width = width, depth = depth)
+        capi = resize_volume(cam, desired_height = height, desired_width = width, desired_depth = depth)
         capi = np.maximum(capi,0)
         heatmap = (capi - capi.min()) / (capi.max() - capi.min()) 
 
@@ -59,7 +59,7 @@ def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer
         neg_cam = np.zeros(last_conv_layer_output.shape[0:3], dtype=np.float32)
         for index, w in enumerate(neg_pooled_grads):
             neg_cam += w * last_conv_layer_output[:, :, :, index]
-        neg_capi = resize_volume(neg_cam, height = height, width = width, depth = depth)
+        neg_capi = resize_volume(neg_cam, desired_height = height, desired_width = width, desired_depth = depth)
         neg_capi = np.maximum(neg_capi,0)
         neg_heatmap = (neg_capi - neg_capi.min()) / (neg_capi.max() - neg_capi.min()) 
 
