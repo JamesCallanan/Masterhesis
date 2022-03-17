@@ -13,7 +13,7 @@ from helper_functions import process_seg_mask, resize_volume
 # Also negative gradients don't correspond to other class predictions - they just correspond to a decreased confidence in the disease of interest. 
 # Should probably still only be looking within the heart
 
-def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer_name, dataset_loader, seg_masks_and_image_paths):
+def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer_name, dataset_loader, seg_masks_and_image_paths, height, width, depth):
     data = dataset_loader.take(1)
     images, labels, filenames = list(data)[0]
     images = images.numpy()
@@ -34,7 +34,7 @@ def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer
         heart_mri_path = filenames[i].numpy().decode('utf-8') #need to access filepath which is stored as a string in tensor object # for i, image in enumerate(images):  
         
         seg_mask_path = seg_masks_and_image_paths[heart_mri_path]
-        segmentation_mask = process_seg_mask(seg_mask_path)
+        segmentation_mask = process_seg_mask(seg_mask_path, height = height, width = width, depth = depth))
         summed_seg_map = segmentation_mask != 0
 
         with tf.GradientTape() as tape:
@@ -49,7 +49,7 @@ def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer
         cam = np.zeros(last_conv_layer_output.shape[0:3], dtype=np.float32)
         for index, w in enumerate(pooled_grads):
             cam += w * last_conv_layer_output[:, :, :, index]
-        capi = resize_volume(cam)
+        capi = resize_volume(cam, height = height, width = width, depth = depth)
         capi = np.maximum(capi,0)
         heatmap = (capi - capi.min()) / (capi.max() - capi.min()) 
 
@@ -60,7 +60,7 @@ def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer
         neg_cam = np.zeros(last_conv_layer_output.shape[0:3], dtype=np.float32)
         for index, w in enumerate(neg_pooled_grads):
             neg_cam += w * last_conv_layer_output[:, :, :, index]
-        neg_capi = resize_volume(neg_cam)
+        neg_capi = resize_volume(neg_cam, height = height, width = width, depth = depth)
         neg_capi = np.maximum(neg_capi,0)
         neg_heatmap = (neg_capi - neg_capi.min()) / (neg_capi.max() - neg_capi.min()) 
 

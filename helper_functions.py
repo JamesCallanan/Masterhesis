@@ -277,9 +277,9 @@ def process_scan(path, desired_depth, desired_width, desired_height):
     return volume
 
 
-def process_seg_mask(path):
+def process_seg_mask(path, depth, width, height):
     volume = read_nifti_file(path)
-    volume = resize_volume(volume)
+    volume = resize_volume(volume, desired_depth = depth, desired_width = width, desired_height = height)
     return volume
 
 
