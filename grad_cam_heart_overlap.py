@@ -1,7 +1,3 @@
-from skimage.transform import resize
-import matplotlib.cm as cm
-import cv2
-from skimage.color import gray2rgb
 import tensorflow as tf
 import numpy as np
 
