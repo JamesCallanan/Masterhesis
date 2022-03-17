@@ -215,7 +215,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         """Process training data by rotating and adding a channel."""
         #volume = augment(volume)
         volume = tf.expand_dims(volume, axis=3)
-        if paths:
+        if paths is not None:
             return volume, label, paths
         else:
             return volume, label
@@ -223,7 +223,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     def validation_preprocessing(volume, label, paths=None):
         """Process validation data by only adding a channel."""
         volume = tf.expand_dims(volume, axis=3)
-        if paths:
+        if paths is not None:
             return volume, label, paths
         else:
             return volume, label
