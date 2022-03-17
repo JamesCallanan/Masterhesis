@@ -41,19 +41,18 @@ def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer
             last_conv_layer_output, preds = grad_model(image)
             class_channel = preds#[:, class_index]
 
-        last_conv_layer_output = last_conv_layer_output[0]
-
         #pos grads correspond to a class 1 prediction
         grads = tape.gradient(class_channel, last_conv_layer_output)[0]
         pooled_grads = tf.reduce_mean(grads, axis=(0,1,2))
+        
+        last_conv_layer_output = last_conv_layer_output[0]
+        
         cam = np.zeros(last_conv_layer_output.shape[0:3], dtype=np.float32)
         for index, w in enumerate(pooled_grads):
             cam += w * last_conv_layer_output[:, :, :, index]
         capi = resize_volume(cam, height = height, width = width, depth = depth)
         capi = np.maximum(capi,0)
         heatmap = (capi - capi.min()) / (capi.max() - capi.min()) 
-
-        ones = np.ones(heatmap.shape)
 
         #neg grads correspond to a class 0 prediction
         neg_pooled_grads = tf.reduce_mean(-grads, axis=(0,1,2))
@@ -63,6 +62,8 @@ def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer
         neg_capi = resize_volume(neg_cam, height = height, width = width, depth = depth)
         neg_capi = np.maximum(neg_capi,0)
         neg_heatmap = (neg_capi - neg_capi.min()) / (neg_capi.max() - neg_capi.min()) 
+
+        ones = np.ones(heatmap.shape)
 
         fraction_of_heart_in_mri = np.sum(ones*summed_seg_map)/np.sum(ones)
         fraction_of_pos_gradients_in_heart_in_mri = np.sum(heatmap*summed_seg_map)/np.sum(heatmap)
