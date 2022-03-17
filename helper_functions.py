@@ -164,11 +164,11 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                 cropped_heart_img = heart_img[first_row:last_row , first_col:last_col]
 
                 img = nib.Nifti1Image(cropped_heart_img, np.eye(4))
-                roi_filename = '/ROI_' + patient_name + '.nii.gz'
-                roi_filepath = patient_data_path + roi_filename
+                roi_filename = 'ROI_' + patient_name + '.nii.gz'
+                roi_filepath = os.path.join(patient_data_path, roi_filename)
                 nib.save(img, roi_filepath)
 
-                destination_directory = root_destination_directory + patient_disease_class 
+                destination_directory = os.path.join(root_destination_directory,patient_disease_class)
 
                 shutil.move(roi_filepath, destination_directory)
 
@@ -176,7 +176,7 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                 cropped_seg_filepath = patient_data_path + '/cropped_' + patient_name + '.nii.gz'
                 nib.save(cropped_seg, cropped_seg_filepath) 
 
-                seg_masks_and_image_paths[destination_directory + roi_filename] = cropped_seg_filepath
+                seg_masks_and_image_paths[os.path.join(destination_directory,roi_filename)] = cropped_seg_filepath
             
             else:
                 if hide_pixels_outside_heart:
@@ -189,17 +189,17 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                   heart_img = heart_img*(seg_map[:,:,:] != 0)
 
                   filtered_heart_img = nib.Nifti1Image(heart_img, np.eye(4))
-                  filtered_heart_filename = '/filtered_' + patient_name + '.nii.gz'
-                  filtered_heart_filepath = patient_data_path + filtered_heart_filename
+                  filtered_heart_filename = 'filtered_' + patient_name + '.nii.gz'
+                  filtered_heart_filepath = os.path.join(patient_data_path,filtered_heart_filename)
                   nib.save(filtered_heart_img, filtered_heart_filepath)
 
-                  destination_directory = root_destination_directory + patient_disease_class 
+                  destination_directory =  os.path.join(root_destination_directory,patient_disease_class)
                   shutil.move(filtered_heart_filepath, destination_directory)
-                  seg_masks_and_image_paths[destination_directory + heart_MRI_ED_filename] = heart_MRI_ED_gt_filepath 
+                  seg_masks_and_image_paths[os.path.join(destination_directory,heart_MRI_ED_filename)] = heart_MRI_ED_gt_filepath 
                 else:
-                  destination_directory = root_destination_directory + patient_disease_class 
+                  destination_directory = os.path.join(root_destination_directory,patient_disease_class)
                   shutil.move(heart_MRI_ED_filepath, destination_directory)
-                  seg_masks_and_image_paths[destination_directory + heart_MRI_ED_filename] = heart_MRI_ED_gt_filepath
+                  seg_masks_and_image_paths[os.path.join(destination_directory, heart_MRI_ED_filename)] = heart_MRI_ED_gt_filepath
     return seg_masks_and_image_paths
 
 
