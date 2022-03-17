@@ -22,7 +22,8 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
                                                                             },
                                                     hide_pixels_outside_heart_train = False,
                                                     hide_pixels_outside_heart_val = False,
-                                                    num_validation_images = 4
+                                                    num_validation_images = 4,
+                                                    pass_paths_to_dataset_loaders = False
                                                 ):
                             
     if perform_ROI:
@@ -228,8 +229,12 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
             return volume, label
 
     # Define data loaders.
-    train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
-    validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val))
+    if pass_paths_to_dataset_loaders: #cannot pass filenames as sample_weights for training - only works for inference
+        train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train, filenames_train))
+        validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val, filenames_val))
+    else:
+        train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+        validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val))
 
     # train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train, filenames_train))
     # validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val, filenames_val))
