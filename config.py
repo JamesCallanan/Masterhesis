@@ -12,12 +12,18 @@ model_base_path = '/content/gdrive/MyDrive/ME Project/Results/Models/'
 model_info_json = '/content/gdrive/MyDrive/ME Project/Results/model_info.json'
 
 class Model_Modes(Enum):
-  STANDARD = 'STANDARD'
-  ZEROS_OUTSIDE_HEART_TRAIN = 'ZEROS_OUTSIDE_HEART_TRAIN'
-  ZEROS_OUTSIDE_HEART_TRAIN_VAL = 'ZEROS_OUTSIDE_HEART_TRAIN_VAL'
-  GRAD_CAM_LOSS_FN = 'GRAD_CAM_LOSS_FN'
+  STANDARD = 1
+  ZEROS_OUTSIDE_HEART_TRAIN = 2
+  ZEROS_OUTSIDE_HEART_TRAIN_VAL = 3
+  GRAD_CAM_LOSS_FN = 4
 
 class Tuner_Search_Types(Enum):
-  RANDOM = 'RANDOM'
-  BAYESIAN = 'BAYESIAN'
-  HYPERBAND = 'HYPERBAND'
+  RANDOM = 1
+  BAYESIAN = 2
+  HYPERBAND = 3
+
+class Disease_Classes(Enum):
+  HCM_NOR = 1
+  DCM_NOR = 2
+  RV_NOR = 3
+  MINF_NOR = 4
