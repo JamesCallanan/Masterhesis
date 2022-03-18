@@ -7,6 +7,8 @@ from tensorflow.keras.layers import GlobalAveragePooling3D
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 
+def fun():
+  print('hello')
 
 #Model 1
 def get_model_1(num_additional_conv_layers, lr, width, height, depth):
