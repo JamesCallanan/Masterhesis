@@ -39,9 +39,9 @@ def get_model_1(num_additional_conv_layers, lr, width, height, depth):
     # return constructed network architecture
     return model
 
-def build_model_1(hp, width, height, depth, hyperparam1_min_val, hyperparam1_max_val, hyperparam2_min_val, hyperparam2_max_val):
-    num_additional_conv_layers = hp.Int("num_additional_conv_layers", min_value = hyperparam1_min_val, max_value = hyperparam1_max_val, step = 1)
-    lr = hp.Float("lr", min_value=hyperparam2_min_val, max_value=hyperparam2_max_val, sampling="log")
+def build_model_1(hp, width, height, depth, hyperparam_ranges):
+    num_additional_conv_layers = hp.Int("num_additional_conv_layers", min_value = hyperparam_ranges['hyperparam1']['min_val'], hyperparam_ranges['hyperparam1']['max_val'], step = 1)
+    lr = hp.Float("lr", min_value = hyperparam_ranges['hyperparam2']['min_val'], hyperparam_ranges['hyperparam2']['max_val'] , sampling="log")
     # call existing model-building code with the hyperparameter values.
     model = get_model_1(
         num_additional_conv_layers=num_additional_conv_layers,
