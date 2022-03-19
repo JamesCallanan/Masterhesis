@@ -156,7 +156,7 @@ def get_trial_id_by_performance_metric(metric, ordering, database_connection_det
     return 'Error - Requested to order trials by an invalid metric name or ordering option. Metric param should be in Config.Model_Metrics._member_names_ . Ordering param be in Config.Order_By._member_names_'
 
 
-def get_trial_id_by_performance_metric(metric, ordering, database_connection_details):
+def get_trial_and_search_data_by_trial_id(trial_id, database_connection_details):
   conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
   cursor = conn.cursor()
   with conn:
