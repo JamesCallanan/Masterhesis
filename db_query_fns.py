@@ -1,7 +1,7 @@
 import psycopg2
 
 def insert_tuner_search(search, database_connection_details):
-    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['port'])
+    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
         cursor.execute(f"""INSERT INTO tuner_search 
@@ -47,7 +47,7 @@ def insert_tuner_search(search, database_connection_details):
 
 
 def insert_trial(trial, database_connection_details):
-    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['port'])
+    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
         cursor.execute(f"""INSERT INTO trials 
@@ -72,7 +72,7 @@ def insert_trial(trial, database_connection_details):
 
 
 def update_trial_with_heatmap_data(trial_updated, database_connection_details):  
-    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['port'])
+    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
         cursor.execute(f""" UPDATE trials 
@@ -87,7 +87,7 @@ def update_trial_with_heatmap_data(trial_updated, database_connection_details):
 
 
 def get_trial_by_id(trial_id, database_connection_details):
-    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['port'])
+    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
       cursor.execute(f"SELECT * FROM trials WHERE trial_id = '{trial_id}'")
@@ -97,7 +97,7 @@ def get_trial_by_id(trial_id, database_connection_details):
 
 
 def get_tuner_search_by_id(search_id, database_connection_details):
-    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['port'])
+    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
       cursor.execute(f"SELECT * FROM tuner_search WHERE search_id = '{search_id}'")
@@ -106,7 +106,7 @@ def get_tuner_search_by_id(search_id, database_connection_details):
     return results
 
 def get_all_trials(database_connection_details):
-    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['port'])
+    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
         cursor.execute("SELECT * FROM trials")
@@ -115,7 +115,7 @@ def get_all_trials(database_connection_details):
     return results
 
 def get_all_tuner_searches(database_connection_details):
-    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['port'])
+    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
         cursor.execute("SELECT * FROM tuner_search")
