@@ -144,7 +144,7 @@ def get_trial_id_by_performance_metric(metric, ordering, database_connection_det
     conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
-        cursor.execute("SELECT trial_id FROM trials ORDER BY %s %s",( metric ,ordering ))
+        cursor.execute(f"SELECT trial_id FROM trials ORDER BY {metric} {ordering}")
         results = cursor.fetchall()
     conn.close()
     return results
