@@ -11,6 +11,8 @@ tensorboard_folder_path = '/content/gdrive/MyDrive/ME Project/Results/TensorBoar
 model_base_path = '/content/gdrive/MyDrive/ME Project/Results/Models/'
 model_info_json = '/content/gdrive/MyDrive/ME Project/Results/model_info.json'
 
+database_path = '/content/gdrive/MyDrive/ME Project/Results/model_info.db'
+
 class Model_Modes(Enum):
   STANDARD = 1
   ZEROS_OUTSIDE_HEART_TRAIN = 2
