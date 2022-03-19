@@ -30,6 +30,16 @@ class Disease_Classes(Enum):
   RV_NOR = 3
   MINF_NOR = 4
 
+class Model_Metrics(Enum):
+  VAL_ACC = 'val_acc'
+  VAL_LOSS = 'val_loss'
+  TRAIN_ACC = 'train_acc'
+  TRAIN_LOSS = 'train_loss'
+
+class Order_By(Enum):
+  ASC = 'asc'
+  DESC = 'desc'
+
 def should_we_hide_pixels_outside_heart(model_mode_value):
   if model_mode_value == Model_Modes.STANDARD.value:
       hide_pixels_outside_heart_train = False

@@ -1,4 +1,5 @@
 import psycopg2
+import Model_Metrics, Order_By from config
 
 def insert_tuner_search(search, database_connection_details):
     conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
@@ -136,3 +137,20 @@ def get_all_tuner_searches(database_connection_details):
         results = cursor.fetchall()
     conn.close()
     return results
+
+
+def get_trial_id_by_performance_metric(metric, ordering, database_connection_details):
+  if metric in Model_Metrics._member_names_ and ordering in Order_By._member_names_ :
+    conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
+    cursor = conn.cursor()
+    with conn:
+        cursor.execute("SELECT trial_id FROM trials ORDER BY %s %s",( metric ,ordering ))
+        results = cursor.fetchall()
+    conn.close()
+    return results
+  elif metric not in Model_Metrics._member_names_:
+    return 'Error - Requested to order trials by an invalid metric name. Metric param should be in Config.Model_Metrics._member_names_'
+  elif ordering not in Order_By._member_names_:
+    return 'Error - Requested to order trials by an invalid ordering option. Ordering param be in Config.Order_By._member_names_'  
+  else:
+    return 'Error - Requested to order trials by an invalid metric name or ordering option. Metric param should be in Config.Model_Metrics._member_names_ . Ordering param be in Config.Order_By._member_names_'
