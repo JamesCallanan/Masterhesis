@@ -1,5 +1,5 @@
 import psycopg2
-import Model_Metrics, Order_By from config
+from config import Model_Metrics, Order_By
 
 def insert_tuner_search(search, database_connection_details):
     conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
