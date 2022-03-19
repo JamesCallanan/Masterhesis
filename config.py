@@ -27,3 +27,23 @@ class Disease_Classes(Enum):
   DCM_NOR = 2
   RV_NOR = 3
   MINF_NOR = 4
+
+def should_we_hide_pixels_outside_heart(model_mode_value):
+  if model_mode_value == Model_Modes.STANDARD.value:
+      hide_pixels_outside_heart_train = False
+      hide_pixels_outside_heart_val = False
+
+  if model_mode_value == Model_Modes.ZEROS_OUTSIDE_HEART_TRAIN.value:
+      hide_pixels_outside_heart_train = True
+      hide_pixels_outside_heart_val = False
+
+  if model_mode_value == Model_Modes.ZEROS_OUTSIDE_HEART_TRAIN_VAL.value:
+      hide_pixels_outside_heart_train = True
+      hide_pixels_outside_heart_val = True
+
+  # To use the following mode would need to train on a different model altogether could have function definition take place in an if statement!
+  if model_mode_value == Model_Modes.GRAD_CAM_LOSS_FN.value:
+      hide_pixels_outside_heart_train = False
+      hide_pixels_outside_heart_val = False
+
+  return hide_pixels_outside_heart_train, hide_pixels_outside_heart_val
