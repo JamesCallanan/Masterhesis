@@ -105,7 +105,7 @@ def get_tuner_search_by_id(search_id, database_connection_details):
     conn.close()
     return results
 
-def get_all_trials(, database_connection_details):
+def get_all_trials(database_connection_details):
     conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , database_connection_details['port'] = ngrok_port)
     cursor = conn.cursor()
     with conn:
@@ -114,7 +114,7 @@ def get_all_trials(, database_connection_details):
     conn.close()
     return results
 
-def get_all_tuner_searches(, database_connection_details):
+def get_all_tuner_searches(database_connection_details):
     conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , database_connection_details['port'] = ngrok_port)
     cursor = conn.cursor()
     with conn:
