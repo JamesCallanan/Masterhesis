@@ -54,7 +54,12 @@ def insert_trial(trial, database_connection_details):
         cursor.execute(f"""INSERT INTO trials 
                           ( trial_id,
                             search_id,
-                            model_path
+                            model_path,
+                            val_loss,
+                            val_acc,
+                            train_loss,
+                            train_acc,
+                            last_conv_layer_name
                           )
                           VALUES (%s,%s,%s)
                           ON CONFLICT DO NOTHING
@@ -62,24 +67,36 @@ def insert_trial(trial, database_connection_details):
                         (
                           trial['trial_id'],
                           trial['search_id'],
-                          trial['model_path']
+                          trial['model_path'],
+                          trial['val_loss'],
+                          trial['val_acc'],
+                          trial['train_loss'],
+                          trial['train_acc'],
+                          trial['last_conv_layer_name']
                         )
                       )
     conn.close()
 
 
-def update_trial_with_heatmap_data(trial_updated, database_connection_details):  
+def update_trial_with_heatmap_data(trial_updated, database_connection_details): 
     conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
-        cursor.execute(f""" UPDATE trials 
+        cursor.execute( """ UPDATE trials 
                             SET 
-                              average_fraction_of_heart_in_mri_batch = {trial_updated['average_fraction_of_heart_in_mri_batch']},
-                              average_fraction_of_pos_gradients_in_heart_in_batch_of_mris = {trial_updated['average_fraction_of_pos_gradients_in_heart_in_batch_of_mris']},
-                              average_fraction_of_neg_gradients_in_heart_in_batch_of_mris = {trial_updated['average_fraction_of_neg_gradients_in_heart_in_batch_of_mris']}
+                              average_fraction_of_heart_in_mri_batch = %s ,
+                              average_fraction_of_pos_gradients_in_heart_in_batch_of_mris = %s ,
+                              average_fraction_of_neg_gradients_in_heart_in_batch_of_mris = %s
                             WHERE 
-                            trial_id = '{trial_updated['trial_id']}' 
-                      """, trial_updated)
+                            trial_id = '%s' 
+                        """,
+                        ( 
+                            trial_updated['average_fraction_of_heart_in_mri_batch'],
+                            trial_updated['average_fraction_of_pos_gradients_in_heart_in_batch_of_mris'],
+                            trial_updated['average_fraction_of_neg_gradients_in_heart_in_batch_of_mris'],
+                            trial_updated['trial_id']
+                        )
+                      )
     conn.close()
 
 
@@ -87,7 +104,7 @@ def get_trial_by_id(trial_id, database_connection_details):
     conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
-      cursor.execute(f"SELECT * FROM trials WHERE trial_id = '{trial_id}'")
+      cursor.execute("SELECT * FROM trials WHERE trial_id = '%s'", (trial_id,))
       results = cursor.fetchall()
     conn.close()
     return results
@@ -97,7 +114,7 @@ def get_tuner_search_by_id(search_id, database_connection_details):
     conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
-      cursor.execute(f"SELECT * FROM tuner_search WHERE search_id = '{search_id}'")
+      cursor.execute(f"SELECT * FROM tuner_search WHERE search_id = '%s'", (search_id,))
       results = cursor.fetchall()
     conn.close()
     return results
