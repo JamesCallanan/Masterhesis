@@ -85,9 +85,9 @@ def update_trial_with_heatmap_data(trial_updated, database_connection_details):
     with conn:
         cursor.execute( """ UPDATE trials 
                             SET 
-                              average_fraction_of_heart_in_mri_batch = %f ,
-                              average_fraction_of_pos_gradients_in_heart_in_batch_of_mris = %f ,
-                              average_fraction_of_neg_gradients_in_heart_in_batch_of_mris = %f
+                              average_fraction_of_heart_in_mri_batch = %s,
+                              average_fraction_of_pos_gradients_in_heart_in_batch_of_mris = %s,
+                              average_fraction_of_neg_gradients_in_heart_in_batch_of_mris = %s
                             WHERE 
                             trial_id = %s 
                         """,

@@ -73,4 +73,4 @@ def calculate_heatmap_heart_overlap_for_binary_classifier(model, last_conv_layer
         fraction_of_pos_gradients_in_heart_in_batch_of_mris.append(fraction_of_pos_gradients_in_heart_in_mri)
         fraction_of_neg_gradients_in_heart_in_batch_of_mris.append(fraction_of_neg_gradients_in_heart_in_mri)
     
-    return np.mean(fraction_of_heart_in_mri_batch), np.mean(fraction_of_pos_gradients_in_heart_in_batch_of_mris), np.mean(fraction_of_neg_gradients_in_heart_in_batch_of_mris)
+    return np.mean(fraction_of_heart_in_mri_batch).item(), np.mean(fraction_of_pos_gradients_in_heart_in_batch_of_mris).item(), np.mean(fraction_of_neg_gradients_in_heart_in_batch_of_mris).item()
