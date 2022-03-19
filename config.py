@@ -40,7 +40,7 @@ class Order_By(Enum):
   ASC = 'asc'
   DESC = 'desc'
 
-class Tuner_Search_table(Enum):
+class Tuner_Search_table_column_indexes(Enum):
   search_id = 0
   search_type = 1 
   num_models = 2
@@ -59,17 +59,17 @@ class Tuner_Search_table(Enum):
   keras_tuner_folder_path = 15
 
 class Trials_table_column_indexes(Enum):
-  trial_id = 1
-  search_id = 2
-  model_path = 3
-  val_loss = 4
-  val_acc = 5
-  train_loss = 6
-  train_acc = 7
-  last_conv_layer_name = 8
-  average_fraction_of_heart_in_mri_batch = 9
-  average_fraction_of_pos_gradients_in_heart_in_batch_of_mris = 10
-  average_fraction_of_neg_gradients_in_heart_in_batch_of_mris = 11
+  trial_id = 0
+  search_id = 1
+  model_path = 2
+  val_loss = 3
+  val_acc = 4
+  train_loss = 5
+  train_acc = 6
+  last_conv_layer_name = 7
+  average_fraction_of_heart_in_mri_batch = 8
+  average_fraction_of_pos_gradients_in_heart_in_batch_of_mris = 9
+  average_fraction_of_neg_gradients_in_heart_in_batch_of_mris = 10
 
 
 def should_we_hide_pixels_outside_heart(model_mode_value):
