@@ -154,3 +154,75 @@ def get_trial_id_by_performance_metric(metric, ordering, database_connection_det
     return 'Error - Requested to order trials by an invalid ordering option. Ordering param be in Config.Order_By._member_names_'  
   else:
     return 'Error - Requested to order trials by an invalid metric name or ordering option. Metric param should be in Config.Model_Metrics._member_names_ . Ordering param be in Config.Order_By._member_names_'
+
+
+def get_trial_id_by_performance_metric(metric, ordering, database_connection_details):
+  conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
+  cursor = conn.cursor()
+  with conn:
+      cursor.execute("""SELECT
+                          trials.search_id,
+                          search_type,
+                          num_models,
+                          num_epochs,
+                          model_template_builder_name,
+                          hyperparam_ranges,
+                          disease_classes,
+                          model_mode,
+                          perform_ROI,
+                          depth,
+                          width,
+                          height,
+                          git_commit_id,
+                          git_branch,
+                          tensorboard_folder_path,
+                          keras_tuner_folder_path,
+                          trial_id,
+                          model_path,
+                          val_loss,
+                          val_acc,
+                          train_loss,
+                          train_acc,
+                          last_conv_layer_name,
+                          average_fraction_of_heart_in_mri_batch,
+                          average_fraction_of_pos_gradients_in_heart_in_batch_of_mris,
+                          average_fraction_of_neg_gradients_in_heart_in_batch_of_mris
+                        FROM trials
+                        INNER JOIN tuner_search ON trials.search_id = tuner_search.search_id
+                        WHERE trials.trial_id = %s""", (trial_id,)
+      )
+      results = cursor.fetchone()
+  conn.close()
+  tuner_search = {
+    'search_id' : results[0], 
+    'search_type' : results[1], 
+    'num_models' : results[2], 
+    'num_epochs' : results[3], 
+    'model_template_builder_name' : results[4], 
+    'hyperparam_ranges' : results[5], 
+    'disease_classes' : results[6], 
+    'model_mode' : results[7], 
+    'perform_ROI' : results[8], 
+    'depth' : results[9], 
+    'width' : results[10], 
+    'height' : results[11], 
+    'git_commit_id' : results[12], 
+    'git_branch' : results[13], 
+    'tensorboard_folder_path' : results[14], 
+    'keras_tuner_folder_path' : results[15]
+  }
+  trial = {
+    'trial_id' : results[16], 
+    'search_id' : results[0], 
+    'model_path' : results[17], 
+    'val_loss' : results[18], 
+    'val_acc' : results[19], 
+    'train_loss' : results[20], 
+    'train_acc' : results[21], 
+    'last_conv_layer_name' : results[22], 
+    'average_fraction_of_heart_in_mri_batch' : results[23], 
+    'average_fraction_of_pos_gradients_in_heart_in_batch_of_mris' : results[24], 
+    'average_fraction_of_neg_gradients_in_heart_in_batch_of_mris' : results[25]
+  }
+
+  return trial, tuner_search
