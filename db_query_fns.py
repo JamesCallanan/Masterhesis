@@ -21,9 +21,10 @@ def insert_tuner_search(search, database_connection_details):
                           git_commit_id,
                           git_branch,
                           tensorboard_folder_path,
-                          keras_tuner_folder_path 
+                          keras_tuner_folder_path,
+                          search_duration_seconds
                         ) 
-                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                         ON CONFLICT DO NOTHING
                         """, 
                         ( 
@@ -42,7 +43,8 @@ def insert_tuner_search(search, database_connection_details):
                           search['git_commit_id'],
                           search['git_branch'],
                           search['tensorboard_folder_path'],
-                          search['keras_tuner_folder_path'] 
+                          search['keras_tuner_folder_path'],
+                          search['search_duration_seconds']
                         )                       
                        )
     conn.close()
@@ -177,6 +179,7 @@ def get_trial_and_search_data_by_trial_id(trial_id, database_connection_details)
                           git_branch,
                           tensorboard_folder_path,
                           keras_tuner_folder_path,
+                          search_duration_seconds,
                           trial_id,
                           model_path,
                           val_loss,
@@ -209,20 +212,21 @@ def get_trial_and_search_data_by_trial_id(trial_id, database_connection_details)
     'git_commit_id' : results[12], 
     'git_branch' : results[13], 
     'tensorboard_folder_path' : results[14], 
-    'keras_tuner_folder_path' : results[15]
+    'keras_tuner_folder_path' : results[15],
+    'search_duration_seconds' : results[16]
   }
   trial = {
-    'trial_id' : results[16], 
+    'trial_id' : results[17], 
     'search_id' : results[0], 
-    'model_path' : results[17], 
-    'val_loss' : results[18], 
-    'val_acc' : results[19], 
-    'train_loss' : results[20], 
-    'train_acc' : results[21], 
-    'last_conv_layer_name' : results[22], 
-    'average_fraction_of_heart_in_mri_batch' : results[23], 
-    'average_fraction_of_pos_gradients_in_heart_in_batch_of_mris' : results[24], 
-    'average_fraction_of_neg_gradients_in_heart_in_batch_of_mris' : results[25]
+    'model_path' : results[18], 
+    'val_loss' : results[19], 
+    'val_acc' : results[20], 
+    'train_loss' : results[21], 
+    'train_acc' : results[22], 
+    'last_conv_layer_name' : results[23], 
+    'average_fraction_of_heart_in_mri_batch' : results[24], 
+    'average_fraction_of_pos_gradients_in_heart_in_batch_of_mris' : results[25], 
+    'average_fraction_of_neg_gradients_in_heart_in_batch_of_mris' : results[26]
   }
 
   return trial, tuner_search

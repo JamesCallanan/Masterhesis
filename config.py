@@ -80,6 +80,7 @@ def should_we_hide_pixels_outside_heart(model_mode_value):
 #   git_branch = 13
 #   tensorboard_folder_path = 14
 #   keras_tuner_folder_path = 15
+#   search_duration_seconds = 16
 
 # class Trials_table_column_indexes(Enum):
 #   trial_id = 0
