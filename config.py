@@ -6,8 +6,9 @@ datasets_wanted = ['train/','validation/']
 base_training_data_path = '/content/training'
 number_of_patients_per_class = 20
 
-Tuner_search_dir = '/content/gdrive/MyDrive/ME Project/Results/Tuner_searches/'
-
+tuner_search_dir = '/content/gdrive/MyDrive/ME Project/Results/Tuner_searches/'
+tensorboard_folder_name = 'Tensorboard'
+models_folder_name = 'Models'
 class Model_Modes(Enum):
   STANDARD = 1
   ZEROS_OUTSIDE_HEART_TRAIN = 2
