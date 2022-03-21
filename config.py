@@ -6,9 +6,7 @@ datasets_wanted = ['train/','validation/']
 base_training_data_path = '/content/training'
 number_of_patients_per_class = 20
 
-KT_dir = '/content/gdrive/MyDrive/ME Project/Results/Keras_Tuner/'
-tensorboard_dir = '/content/gdrive/MyDrive/ME Project/Results/TensorBoard/'
-model_base_path = '/content/gdrive/MyDrive/ME Project/Results/Models/'
+Tuner_search_dir = '/content/gdrive/MyDrive/ME Project/Results/Tuner_searches/'
 
 class Model_Modes(Enum):
   STANDARD = 1
