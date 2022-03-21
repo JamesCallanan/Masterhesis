@@ -9,6 +9,8 @@ number_of_patients_per_class = 20
 tuner_search_dir = '/content/gdrive/MyDrive/ME Project/Results/Tuner_searches/'
 tensorboard_folder_name = 'Tensorboard'
 models_folder_name = 'Models'
+keras_tuner_folder_name = 'Keras Tuner'
+
 class Model_Modes(Enum):
   STANDARD = 1
   ZEROS_OUTSIDE_HEART_TRAIN = 2
