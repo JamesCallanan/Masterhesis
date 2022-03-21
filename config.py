@@ -7,11 +7,8 @@ base_training_data_path = '/content/training'
 number_of_patients_per_class = 20
 
 KT_dir = '/content/gdrive/MyDrive/ME Project/Results/Keras_Tuner/'
-tensorboard_folder_path = '/content/gdrive/MyDrive/ME Project/Results/TensorBoard/'
+tensorboard_dir = '/content/gdrive/MyDrive/ME Project/Results/TensorBoard/'
 model_base_path = '/content/gdrive/MyDrive/ME Project/Results/Models/'
-model_info_json = '/content/gdrive/MyDrive/ME Project/Results/model_info.json'
-
-database_path = '/content/gdrive/MyDrive/ME Project/Results/model_info.db'
 
 class Model_Modes(Enum):
   STANDARD = 1
@@ -62,6 +59,9 @@ def should_we_hide_pixels_outside_heart(model_mode_value):
 
   return hide_pixels_outside_heart_train, hide_pixels_outside_heart_val
 
+# These are old ways used to store data no longer used (json and sqlite)
+# model_info_json = '/content/gdrive/MyDrive/ME Project/Results/model_info.json'
+# database_path = '/content/gdrive/MyDrive/ME Project/Results/model_info.db'
 
 # class Tuner_Search_table_column_indexes(Enum):
 #   search_id = 0
