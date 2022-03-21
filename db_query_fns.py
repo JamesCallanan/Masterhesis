@@ -55,7 +55,7 @@ def insert_trial(trial, database_connection_details):
     cursor = conn.cursor()
     with conn:
         cursor.execute(f"""INSERT INTO trials 
-                          ( trial_id,
+                          ( kt_trial_id,
                             search_id,
                             model_path,
                             val_loss,
@@ -68,7 +68,7 @@ def insert_trial(trial, database_connection_details):
                           ON CONFLICT DO NOTHING
                         """,
                         (
-                          trial['trial_id'],
+                          trial['kt_trial_id'],
                           trial['search_id'],
                           trial['model_path'],
                           trial['val_loss'],
@@ -91,23 +91,23 @@ def update_trial_with_heatmap_data(trial_updated, database_connection_details):
                               average_fraction_of_pos_gradients_in_heart_in_batch_of_mris = %s,
                               average_fraction_of_neg_gradients_in_heart_in_batch_of_mris = %s
                             WHERE 
-                            trial_id = %s 
+                            trial_uid = %s 
                         """,
                         ( 
                             trial_updated['average_fraction_of_heart_in_mri_batch'],
                             trial_updated['average_fraction_of_pos_gradients_in_heart_in_batch_of_mris'],
                             trial_updated['average_fraction_of_neg_gradients_in_heart_in_batch_of_mris'],
-                            trial_updated['trial_id']
+                            trial_updated['trial_uid']
                         )
                       )
     conn.close()
 
 
-def get_trial_by_id(trial_id, database_connection_details):
+def get_trial_by_trial_uid(trial_uid, database_connection_details):
     conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
-      cursor.execute("SELECT * FROM trials WHERE trial_id = %s", (trial_id,))
+      cursor.execute("SELECT * FROM trials WHERE trial_uid = %s", (trial_uid,))
       results = cursor.fetchall()
     conn.close()
     return results
@@ -141,12 +141,12 @@ def get_all_tuner_searches(database_connection_details):
     return results
 
 
-def get_trial_id_by_performance_metric(metric, ordering, database_connection_details):
+def get_trial_uid_by_performance_metric(metric, ordering, database_connection_details):
   if metric in Model_Metrics._member_names_ and ordering in Order_By._member_names_ :
     conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
     cursor = conn.cursor()
     with conn:
-        cursor.execute(f"SELECT trial_id FROM trials ORDER BY {metric} {ordering}")
+        cursor.execute(f"SELECT trial_uid FROM trials ORDER BY {metric} {ordering}")
         results = cursor.fetchall()
     conn.close()
     return results
@@ -158,7 +158,7 @@ def get_trial_id_by_performance_metric(metric, ordering, database_connection_det
     return 'Error - Requested to order trials by an invalid metric name or ordering option. Metric param should be in Config.Model_Metrics._member_names_ . Ordering param be in Config.Order_By._member_names_'
 
 
-def get_trial_and_search_data_by_trial_id(trial_id, database_connection_details):
+def get_trial_and_search_data_by_trial_uid(trial_uid, database_connection_details):
   conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
   cursor = conn.cursor()
   with conn:
@@ -180,7 +180,8 @@ def get_trial_and_search_data_by_trial_id(trial_id, database_connection_details)
                           tensorboard_folder_path,
                           keras_tuner_folder_path,
                           search_duration_seconds,
-                          trial_id,
+                          trial_uid,
+                          kt_trial_id,
                           model_path,
                           val_loss,
                           val_acc,
@@ -192,7 +193,7 @@ def get_trial_and_search_data_by_trial_id(trial_id, database_connection_details)
                           average_fraction_of_neg_gradients_in_heart_in_batch_of_mris
                         FROM trials
                         INNER JOIN tuner_search ON trials.search_id = tuner_search.search_id
-                        WHERE trials.trial_id = %s""", (trial_id,)
+                        WHERE trials.trial_uid = %s""", (trial_uid,)
       )
       results = cursor.fetchone()
   conn.close()
@@ -216,17 +217,18 @@ def get_trial_and_search_data_by_trial_id(trial_id, database_connection_details)
     'search_duration_seconds' : results[16]
   }
   trial = {
-    'trial_id' : results[17], 
+    'trial_uid' : results[17], 
+    'kt_trial_id' : results[18], 
     'search_id' : results[0], 
-    'model_path' : results[18], 
-    'val_loss' : results[19], 
-    'val_acc' : results[20], 
-    'train_loss' : results[21], 
-    'train_acc' : results[22], 
-    'last_conv_layer_name' : results[23], 
-    'average_fraction_of_heart_in_mri_batch' : results[24], 
-    'average_fraction_of_pos_gradients_in_heart_in_batch_of_mris' : results[25], 
-    'average_fraction_of_neg_gradients_in_heart_in_batch_of_mris' : results[26]
+    'model_path' : results[19], 
+    'val_loss' : results[20], 
+    'val_acc' : results[21], 
+    'train_loss' : results[22], 
+    'train_acc' : results[23], 
+    'last_conv_layer_name' : results[24], 
+    'average_fraction_of_heart_in_mri_batch' : results[25], 
+    'average_fraction_of_pos_gradients_in_heart_in_batch_of_mris' : results[26], 
+    'average_fraction_of_neg_gradients_in_heart_in_batch_of_mris' : results[27]
   }
 
   return trial, tuner_search
