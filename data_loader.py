@@ -214,8 +214,16 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
     def train_preprocessing(volume, label, paths=None):
         """Process training data by rotating and adding a channel."""
+
+        print('Volume shape is', np.shape(volume))
         volume = augment(volume)
         print('Volume shape is', np.shape(volume))
+        print('Len dimension 1 is', len(volume[0]))
+        print('Len dimension 2 is', len(volume[1]))
+        print('Len dimension 3 is', len(volume[2]))
+        print('Len dimension 4 is', len(volume[3]))
+        print('Len dimension 5 is', len(volume[4]))
+
         volume = tf.expand_dims(volume, axis=3)
         if paths is not None:
             return volume, label, paths
