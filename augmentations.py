@@ -30,13 +30,61 @@ def gaussian_noise(volume):
       return volume + np.random.normal(noise_mean, noise_variance, volume.shape)  
     return volume
 
+
+
+# my version might need to adjust the sigma used for shifting depending if on roi mode or not - need to look at his image dimensions which this was applied too. else could just go quite conservative.
+# might have different indexing and shapes of data depending on when I am applying this.
+# i.e. I might have [batch, width, height, slices, colour channel] instead of [b, 0, z, height, width]
+
+
+#shape when function is called is (220, 250, 10)
+def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.02): #in paper they say sigma was = 20 - might stick with more conservative
+      for mri_slice in range(np.shape(data)[-1]): 
+          if np.random.random() < p_augm: #Only apply to 10% of images
+              offset_0 = np.round(np.random.normal(mu, len(data[0])*sigma_multiplier )).astype(int) #if width was 250 pixels we would shift with standard deviation 5 for sigma multiplier = 0.02
+              offset_1 = np.round(np.random.normal(mu, len(data[1])*sigma_multiplier )).astype(int) 
+              new_slice = np.zeros(np.shape(data[:,:,0]), dtype=np.float32)
+              if seg is not None:
+                  new_slice_seg = np.zeros(np.shape(data[:,:,0]), dtype=np.int32)
+
+              if offset_0 < 0:
+                  offset_0 = np.abs(offset_0)
+                  new_slice[offset_0 : , : ] = data[ : len(data[0]) - offset_0 , : , mri_slice]
+                  if seg is not None:
+                      new_slice_seg[ offset_0 : , : ] = seg[ : len(seg[0]) - offset_0, : , mri_slice]
+
+              elif offset_0 > 0:
+                  new_slice[ : len(data[0]) - offset_0 , : ] = data[ offset_0 : , : , mri_slice]
+                  if seg is not None:
+                      new_slice_seg[ : len(seg[0]) - offset_0 , : ] = seg[ offset_0 : , : , mri_slice]
+
+              if offset_1 < 0:
+                  offset_1 = np.abs(offset_1)
+                  new_slice[ : , offset_1 : ] = data[ : , : len(data[4]) - offset_1 , mri_slice ]
+                  if seg is not None:
+                      new_slice_seg[ : , offset_1 : ] = seg[ : , : len(seg[4]) - offset_1 , mri_slice ]
+
+              elif offset_1 > 0:
+                  new_slice[ : , : len(data[4]) - offset_1 ] = data[ : , offset_1 : , mri_slice ]
+                  if seg is not None:
+                      new_slice_seg[ : , :len(seg[4]) - offset_1 ] = seg[ : , offset_1 : , mri_slice ]
+
+              data[:, :, mri_slice] = new_slice
+              if seg is not None:
+                  seg[:, :, mri_slice] = new_slice_seg
+
+      return data, seg
+
+
+
 @tf.function
 def augment(volume):
     """Rotate the volume by a few degrees"""
     def augment(volume):
-      volume = rotate_xy_plane(volume)
-      volume = gamma_transform(volume, gamma_range=[0.85,1.15], eps=1e-7)
-      volume = gaussian_noise(volume)
+      # volume = rotate_xy_plane(volume)
+      # volume = gamma_transform(volume, gamma_range=[0.85,1.15], eps=1e-7)
+      # volume = gaussian_noise(volume)
+      volume = motion_augmentation(volume, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.02)
       print('Volume shape is', np.shape(volume))
 
       if np.random.uniform(0,1) > 0.5:
