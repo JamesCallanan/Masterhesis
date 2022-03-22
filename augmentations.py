@@ -73,7 +73,8 @@ def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.0
               data[:, :, mri_slice] = new_slice
               if seg is not None:
                   seg[:, :, mri_slice] = new_slice_seg
-
+      print('Shape of data', np.shape(data))
+      print('Shape of seg', np.shape(seg))
       return data, seg
 
 
