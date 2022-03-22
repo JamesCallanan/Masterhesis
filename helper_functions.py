@@ -143,7 +143,7 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
             for filename in os.listdir(patient_data_path):
                 if str(ED_frame) + '_gt.nii.gz' in filename:
                     heart_MRI_ED_gt_filepath = patient_data_path + '/' + filename
-                if str(ED_frame) + '.nii.gz' in filename:
+                elif str(ED_frame) + '.nii.gz' in filename:
                     heart_MRI_ED_filepath = patient_data_path + '/' + filename
                     heart_MRI_ED_filename = filename
         
