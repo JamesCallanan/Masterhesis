@@ -54,62 +54,64 @@ def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.0
                 new_slice_seg = np.zeros(np.shape(data[:,:,0]), dtype=np.int32)
 
             #testing first case statement works!
-            # new_slice[ : num_rows - abs(offset_y) , abs(offset_x) : ] = data[ abs(offset_y) : , : num_cols - abs(offset_x) , mri_slice]
-
-            # if seg is not None:
-            #     new_slice_seg[ : num_rows - abs(offset_y) , abs(offset_x) : ] = seg[ abs(offset_y) : , : num_cols - abs(offset_x) , mri_slice]
 
             #absolutes must be used when values are less than 0 - you could include them for all but I haven't to speeden computation time
-            # if offset_x > 0 and offset_y > 0:
-            #     print(' x > 0  and y > 0')
+            if offset_x > 0 and offset_y > 0:
+                print(' x > 0  and y > 0')
+                new_slice[ : num_rows - abs(offset_y) , abs(offset_x) : ] = data[ abs(offset_y) : , : num_cols - abs(offset_x) , mri_slice]
+
+                if seg is not None:
+                    new_slice_seg[ : num_rows - abs(offset_y) , abs(offset_x) : ] = seg[ abs(offset_y) : , : num_cols - abs(offset_x) , mri_slice]
 
             #second case statement worked
-            # new_slice[ : num_rows - abs(offset_y) , abs(offset_x) : ] = data[ abs(offset_y) : , : num_cols - abs(offset_x) , mri_slice]
-
-            # if seg is not None:
-            #     new_slice_seg[ : num_rows - abs(offset_y) , abs(offset_x) : ] = seg[ abs(offset_y) : , : num_cols - abs(offset_x) , mri_slice]
 
 
 
-            # elif offset_x > 0 and offset_y < 0:
-            #     print(' x > 0  and y < 0')
+            elif offset_x > 0 and offset_y < 0:
+                print(' x > 0  and y < 0')
 
-            #     new_slice[ abs(offset_y) : , offset_x : ] = data[ : num_rows - abs(offset_y) , mri_slice ]
+                new_slice[ : num_rows - abs(offset_y) , abs(offset_x) : ] = data[ abs(offset_y) : , : num_cols - abs(offset_x) , mri_slice]
 
-            #     if seg is not None:
-            #         new_slice_seg[ abs(offset_y) : , offset_x : ] = seg[ : num_rows - abs(offset_y) , mri_slice ]
+                if seg is not None:
+                    new_slice_seg[ : num_rows - abs(offset_y) , abs(offset_x) : ] = seg[ abs(offset_y) : , : num_cols - abs(offset_x) , mri_slice]
+                # new_slice[ abs(offset_y) : , offset_x : ] = data[ : num_rows - abs(offset_y) , mri_slice ]
+
+                # if seg is not None:
+                #     new_slice_seg[ abs(offset_y) : , offset_x : ] = seg[ : num_rows - abs(offset_y) , mri_slice ]
 
             #third one worked
+
+
+            #worked too
             # new_slice[ : num_rows - abs(offset_y) , : num_cols - abs(offset_x) ] = data[ abs(offset_y) : , abs(offset_x) : , mri_slice ]
           
             # if seg is not None:
             #     new_slice_seg[ : num_rows - abs(offset_y) , : num_cols - abs(offset_x) ] = seg[ abs(offset_y) : , abs(offset_x) : , mri_slice ]
 
-            new_slice[ : num_rows - abs(offset_y) , : num_cols - abs(offset_x) ] = data[ abs(offset_y) : , abs(offset_x) : , mri_slice ]
-          
-            if seg is not None:
-                new_slice_seg[ : num_rows - abs(offset_y) , : num_cols - abs(offset_x) ] = seg[ abs(offset_y) : , abs(offset_x) : , mri_slice ]
-
-            # elif offset_x < 0 and offset_y > 0:
-            #     print(' x < 0  and y > 0')
-
-            #     new_slice[ : num_rows - offset_y , : num_cols - abs(offset_x) ] = data[ offset_y : , abs(offset_x) : , mri_slice ]
+            elif offset_x < 0 and offset_y > 0:
+                print(' x < 0  and y > 0')
+                new_slice[ : num_rows - abs(offset_y) , : num_cols - abs(offset_x) ] = data[ abs(offset_y) : , abs(offset_x) : , mri_slice ]
               
-            #     if seg is not None:
-            #         new_slice_seg[ : num_rows - offset_y , : num_cols - abs(offset_x) ] = seg[ offset_y : , abs(offset_x) : , mri_slice ]
+                if seg is not None:
+                    new_slice_seg[ : num_rows - abs(offset_y) , : num_cols - abs(offset_x) ] = seg[ abs(offset_y) : , abs(offset_x) : , mri_slice ]
 
-            # elif offset_x < 0 and offset_y < 0:
-            #     print(' x < 0  and y < 0')
-
-            #     new_slice[ abs(offset_y) : , : num_cols - abs(offset_x) ] = data[ : num_rows - abs(offset_y) , abs(offset_x) : , mri_slice ]
+                # new_slice[ : num_rows - offset_y , : num_cols - abs(offset_x) ] = data[ offset_y : , abs(offset_x) : , mri_slice ]
               
-            #     if seg is not None:
-            #         new_slice_seg[ abs(offset_y) : , : num_cols - abs(offset_x) ] = seg[ : num_rows - abs(offset_y) , abs(offset_x) : , mri_slice ]
+                # if seg is not None:
+                #     new_slice_seg[ : num_rows - offset_y , : num_cols - abs(offset_x) ] = seg[ offset_y : , abs(offset_x) : , mri_slice ]
 
-            # else:
-            #     new_slice = data[:,:,mri_slice]
-            #     if seg is not None:
-            #         new_slice_seg = seg[:,:,mri_slice]
+            elif offset_x < 0 and offset_y < 0:
+                # print(' x < 0  and y < 0')
+
+                new_slice[ abs(offset_y) : , : num_cols - abs(offset_x) ] = data[ : num_rows - abs(offset_y) , abs(offset_x) : , mri_slice ]
+              
+                if seg is not None:
+                    new_slice_seg[ abs(offset_y) : , : num_cols - abs(offset_x) ] = seg[ : num_rows - abs(offset_y) , abs(offset_x) : , mri_slice ]
+
+            else:
+                new_slice = data[:,:,mri_slice]
+                if seg is not None:
+                    new_slice_seg = seg[:,:,mri_slice]
 
             data[:, :, mri_slice] = new_slice
             print('Shape of data[:,:,mri_slice] ', np.shape(data[:, :, mri_slice]))
