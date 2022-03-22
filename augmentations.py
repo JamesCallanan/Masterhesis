@@ -39,55 +39,49 @@ def gaussian_noise(volume):
 
 #shape when function is called is (220, 250, 10)
 def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.02): #in paper they say sigma was = 20 - might stick with more conservative
-      for mri_slice in range(np.shape(data)[-1]): 
-          if np.random.random() < p_augm: #Only apply to 10% of images
-              offset_0 = np.round(np.random.normal(mu, len(data[0])*sigma_multiplier )).astype(int) #if width was 250 pixels we would shift with standard deviation 5 for sigma multiplier = 0.02
-              offset_1 = np.round(np.random.normal(mu, len(data[1])*sigma_multiplier )).astype(int) 
-              new_slice = np.zeros(np.shape(data[:,:,0]), dtype=np.float32)
+    for mri_slice in range(np.shape(data)[-1]): 
+        if np.random.random() < p_augm: #Only apply to 10% of images
+            offset_x = np.round(np.random.normal(mu, len(data[0])*sigma_multiplier )).astype(int) #if width was 250 pixels we would shift with standard deviation 5 for sigma multiplier = 0.02
+            offset_y = np.round(np.random.normal(mu, len(data[1])*sigma_multiplier )).astype(int) 
+            new_slice = np.zeros(np.shape(data[:,:,0]), dtype=np.float32)
+            
+            num_rows = np.shape(data)[0]
+            num_cols = np.shape(data)[1]
+
+            if seg is not None:
+                new_slice_seg = np.zeros(np.shape(data[:,:,0]), dtype=np.int32)
+
+            #absolutes must be used when values are less than 0 - you could include them for all but I haven't to speeden computation time
+            if offset_x > 0 and offset_y > 0:
+                new_slice[ : num_rows - offset_y , offset_x : ] = data[ offset_y : , : num_cols - offset_x , mri_slice]
+
+                if seg is not None:
+                    new_slice_seg[ : num_rows - offset_y , offset_x : ] = data[ offset_y : , : num_cols - offset_x , mri_slice]
+
+            elif offset_x > 0 and offset_y < 0:
+                new_slice[ abs(offset_y) : , offset_x : ] = data[ : num_rows - abs(offset_y) , mri_slice ]
+
+                if seg is not None:
+                    new_slice_seg[ abs(offset_y) : , offset_x : ] = data[ : num_rows - abs(offset_y) , mri_slice ]
+
+            elif offset_x < 0 and offset_y > 0:
+                new_slice[ : num_rows - offset_y , : num_cols - abs(offset_x) ] = data[ offset_y : , abs(offset_x) : , mri_slice ]
               
-              if seg is not None:
-                  new_slice_seg = np.zeros(np.shape(data[:,:,0]), dtype=np.int32)
+                if seg is not None:
+                    new_slice_seg[ : num_rows - offset_y , : num_cols - abs(offset_x) ] = data[ offset_y : , abs(offset_x) : , mri_slice ]
 
-              if offset_0 < 0:
-                  offset_0 = np.abs(offset_0)
-                  new_slice[offset_0 : , : ] = data[ : np.shape(data)[0] - offset_0 , : , mri_slice]
-                  if seg is not None:
-                      new_slice_seg[ offset_0 : , : ] = seg[ : np.shape(seg)[0] - offset_0, : , mri_slice]
+            elif offset_x < 0 and offset_y < 0:
+                new_slice[ abs(offset_y) : , : num_cols - abs(offset_x) ] = data[ : num_rows - abs(offset_y) , abs(offset_x) : , mri_slice ]
+              
+                if seg is not None:
+                    new_slice_seg[ abs(offset_y) : , : num_cols - abs(offset_x) ] = data[ : num_rows - abs(offset_y) , abs(offset_x) : , mri_slice ]
 
-              elif offset_0 > 0:
-                  new_slice[ : np.shape(data)[0] - offset_0 , : ] = data[ offset_0 : , : , mri_slice]
-                  if seg is not None:
-                      new_slice_seg[ : np.shape(seg)[0] - offset_0 , : ] = seg[ offset_0 : , : , mri_slice]
+            data[:, :, mri_slice] = new_slice
 
-              if offset_1 < 0:
-                  offset_1 = np.abs(offset_1)
-                  new_slice[ : , offset_1 : ] = new_slice[ : , : np.shape(new_slice)[1] - offset_1 ]
-                  if seg is not None:
-                      new_slice_seg[ : , offset_1 : ] = new_slice_seg[ : , : np.shape(new_slice_seg)[1] - offset_1 ]
+            if seg is not None:
+                seg[:, :, mri_slice] = new_slice_seg
 
-              elif offset_1 > 0:
-                  new_slice[ : , : np.shape(new_slice)[1] - offset_1 ] = new_slice[ : , offset_1 : ]
-                  if seg is not None:
-                      new_slice_seg[ : , : np.shape(seg)[1] - offset_1 ] = new_slice_seg[ : , offset_1 : ]
-
-
-              # if offset_1 < 0:
-              #     offset_1 = np.abs(offset_1)
-              #     new_slice[ : , offset_1 : ] = data[ : , : np.shape(data)[1] - offset_1 , mri_slice ]
-              #     if seg is not None:
-              #         new_slice_seg[ : , offset_1 : ] = seg[ : , : np.shape(seg)[1] - offset_1 , mri_slice ]
-
-              # elif offset_1 > 0:
-              #     new_slice[ : , : np.shape(data)[1] - offset_1 ] = data[ : , offset_1 : , mri_slice ]
-              #     if seg is not None:
-              #         new_slice_seg[ : , : np.shape(seg)[1] - offset_1 ] = seg[ : , offset_1 : , mri_slice ]
-
-              data[:, :, mri_slice] = new_slice
-              if seg is not None:
-                  seg[:, :, mri_slice] = new_slice_seg
-      print('Shape of data', np.shape(data))
-      print('Shape of seg', np.shape(seg))
-      return data, seg
+    return data, seg
 
 
 
