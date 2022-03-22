@@ -44,30 +44,31 @@ def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.0
               offset_0 = np.round(np.random.normal(mu, len(data[0])*sigma_multiplier )).astype(int) #if width was 250 pixels we would shift with standard deviation 5 for sigma multiplier = 0.02
               offset_1 = np.round(np.random.normal(mu, len(data[1])*sigma_multiplier )).astype(int) 
               new_slice = np.zeros(np.shape(data[:,:,0]), dtype=np.float32)
+              
               if seg is not None:
                   new_slice_seg = np.zeros(np.shape(data[:,:,0]), dtype=np.int32)
 
               if offset_0 < 0:
                   offset_0 = np.abs(offset_0)
-                  new_slice[offset_0 : , : ] = data[ : len(data[0]) - offset_0 , : , mri_slice]
+                  new_slice[offset_0 : , : ] = data[ : np.shape(data)[0] - offset_0 , : , mri_slice]
                   if seg is not None:
-                      new_slice_seg[ offset_0 : , : ] = seg[ : len(seg[0]) - offset_0, : , mri_slice]
+                      new_slice_seg[ offset_0 : , : ] = seg[ : np.shape(seg)[0] - offset_0, : , mri_slice]
 
               elif offset_0 > 0:
-                  new_slice[ : len(data[0]) - offset_0 , : ] = data[ offset_0 : , : , mri_slice]
+                  new_slice[ : np.shape(data)[0] - offset_0 , : ] = data[ offset_0 : , : , mri_slice]
                   if seg is not None:
-                      new_slice_seg[ : len(seg[0]) - offset_0 , : ] = seg[ offset_0 : , : , mri_slice]
+                      new_slice_seg[ : np.shape(seg)[0] - offset_0 , : ] = seg[ offset_0 : , : , mri_slice]
 
               if offset_1 < 0:
                   offset_1 = np.abs(offset_1)
-                  new_slice[ : , offset_1 : ] = data[ : , : len(data[4]) - offset_1 , mri_slice ]
+                  new_slice[ : , offset_1 : ] = data[ : , : np.shape(data)[1] - offset_1 , mri_slice ]
                   if seg is not None:
-                      new_slice_seg[ : , offset_1 : ] = seg[ : , : len(seg[4]) - offset_1 , mri_slice ]
+                      new_slice_seg[ : , offset_1 : ] = seg[ : , : np.shape(seg)[1] - offset_1 , mri_slice ]
 
               elif offset_1 > 0:
-                  new_slice[ : , : len(data[4]) - offset_1 ] = data[ : , offset_1 : , mri_slice ]
+                  new_slice[ : , : np.shape(data)[1] - offset_1 ] = data[ : , offset_1 : , mri_slice ]
                   if seg is not None:
-                      new_slice_seg[ : , :len(seg[4]) - offset_1 ] = seg[ : , offset_1 : , mri_slice ]
+                      new_slice_seg[ : , : np.shape(seg)[1] - offset_1 ] = seg[ : , offset_1 : , mri_slice ]
 
               data[:, :, mri_slice] = new_slice
               if seg is not None:
