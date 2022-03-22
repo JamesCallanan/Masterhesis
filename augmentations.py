@@ -40,7 +40,6 @@ def gaussian_noise(volume):
 #shape when function is called is (220, 250, 10)
 def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.02): #in paper they say sigma was = 20 - might stick with more conservative
     for mri_slice in range(np.shape(data)[-1]): 
-        print('np.shape(data)', np.shape(data))
         if np.random.random() < p_augm: #Only apply to 10% of images
             offset_x = np.round(np.random.normal(mu, len(data[0])*sigma_multiplier )).astype(int) #if width was 250 pixels we would shift with standard deviation 5 for sigma multiplier = 0.02
             offset_y = np.round(np.random.normal(mu, len(data[1])*sigma_multiplier )).astype(int) 
@@ -92,10 +91,10 @@ def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.0
 def augment(volume):
     """Rotate the volume by a few degrees"""
     def augment(volume):
-      # volume = rotate_xy_plane(volume)
-      # volume = gamma_transform(volume, gamma_range=[0.85,1.15], eps=1e-7)
-      # volume = gaussian_noise(volume)
-      volume, seg = motion_augmentation(volume, seg=None, p_augm=1, mu=0, sigma_multiplier = 0.04)
+      volume = rotate_xy_plane(volume)
+      volume = gamma_transform(volume, gamma_range=[0.85,1.15], eps=1e-7)
+      volume = gaussian_noise(volume)
+      volume, seg = motion_augmentation(volume, seg=None, p_augm=0.1, mu=0, sigma_multiplier = 0.02)
 
       if np.random.uniform(0,1) > 0.5:
         volume = np.fliplr(volume)
