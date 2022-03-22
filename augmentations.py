@@ -79,11 +79,16 @@ def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.0
             #     if seg is not None:
             #         new_slice_seg[ abs(offset_y) : , offset_x : ] = seg[ : num_rows - abs(offset_y) , mri_slice ]
 
+            #third one worked
+            # new_slice[ : num_rows - abs(offset_y) , : num_cols - abs(offset_x) ] = data[ abs(offset_y) : , abs(offset_x) : , mri_slice ]
+          
+            # if seg is not None:
+            #     new_slice_seg[ : num_rows - abs(offset_y) , : num_cols - abs(offset_x) ] = seg[ abs(offset_y) : , abs(offset_x) : , mri_slice ]
+
             new_slice[ : num_rows - abs(offset_y) , : num_cols - abs(offset_x) ] = data[ abs(offset_y) : , abs(offset_x) : , mri_slice ]
           
             if seg is not None:
                 new_slice_seg[ : num_rows - abs(offset_y) , : num_cols - abs(offset_x) ] = seg[ abs(offset_y) : , abs(offset_x) : , mri_slice ]
-
 
             # elif offset_x < 0 and offset_y > 0:
             #     print(' x < 0  and y > 0')
