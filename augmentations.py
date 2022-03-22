@@ -45,7 +45,11 @@ def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.0
             offset_x = np.round(np.random.normal(mu, len(data[0])*sigma_multiplier )).astype(int) #if width was 250 pixels we would shift with standard deviation 5 for sigma multiplier = 0.02
             offset_y = np.round(np.random.normal(mu, len(data[1])*sigma_multiplier )).astype(int) 
             new_slice = np.zeros(np.shape(data[:,:,0]), dtype=np.float32)
-
+            # print('np.shape(new_slice)', np.shape(new_slice))
+            num_rows = np.shape(data)[0]
+            # print('num_rows',num_rows)
+            num_cols = np.shape(data)[1]
+            # print('num_cols',num_cols)
             if seg is not None:
                 new_slice_seg = np.zeros(np.shape(data[:,:,0]), dtype=np.int32)
 
