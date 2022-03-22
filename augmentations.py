@@ -86,8 +86,7 @@ def augment(volume):
       # volume = rotate_xy_plane(volume)
       # volume = gamma_transform(volume, gamma_range=[0.85,1.15], eps=1e-7)
       # volume = gaussian_noise(volume)
-      volume, seg = motion_augmentation(volume, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.02)
-      print('Volume shape is', np.shape(volume))
+      volume, seg = motion_augmentation(volume, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.22)
 
       if np.random.uniform(0,1) > 0.5:
         volume = np.fliplr(volume)
