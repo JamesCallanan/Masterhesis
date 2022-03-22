@@ -59,16 +59,28 @@ def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.0
                   if seg is not None:
                       new_slice_seg[ : np.shape(seg)[0] - offset_0 , : ] = seg[ offset_0 : , : , mri_slice]
 
-              if offset_1 < 0:
+             if offset_1 < 0:
                   offset_1 = np.abs(offset_1)
-                  new_slice[ : , offset_1 : ] = data[ : , : np.shape(data)[1] - offset_1 , mri_slice ]
+                  new_slice[ : , offset_1 : ] = new_slice[ : , : np.shape(new_slice)[1] - offset_1 , mri_slice ]
                   if seg is not None:
-                      new_slice_seg[ : , offset_1 : ] = seg[ : , : np.shape(seg)[1] - offset_1 , mri_slice ]
+                      new_slice_seg[ : , offset_1 : ] = new_slice_seg[ : , : np.shape(new_slice_seg)[1] - offset_1 , mri_slice ]
 
               elif offset_1 > 0:
-                  new_slice[ : , : np.shape(data)[1] - offset_1 ] = data[ : , offset_1 : , mri_slice ]
+                  new_slice[ : , : np.shape(new_slice)[1] - offset_1 ] = new_slice[ : , offset_1 : , mri_slice ]
                   if seg is not None:
-                      new_slice_seg[ : , : np.shape(seg)[1] - offset_1 ] = seg[ : , offset_1 : , mri_slice ]
+                      new_slice_seg[ : , : np.shape(seg)[1] - offset_1 ] = new_slice_seg[ : , offset_1 : , mri_slice ]
+
+
+              # if offset_1 < 0:
+              #     offset_1 = np.abs(offset_1)
+              #     new_slice[ : , offset_1 : ] = data[ : , : np.shape(data)[1] - offset_1 , mri_slice ]
+              #     if seg is not None:
+              #         new_slice_seg[ : , offset_1 : ] = seg[ : , : np.shape(seg)[1] - offset_1 , mri_slice ]
+
+              # elif offset_1 > 0:
+              #     new_slice[ : , : np.shape(data)[1] - offset_1 ] = data[ : , offset_1 : , mri_slice ]
+              #     if seg is not None:
+              #         new_slice_seg[ : , : np.shape(seg)[1] - offset_1 ] = seg[ : , offset_1 : , mri_slice ]
 
               data[:, :, mri_slice] = new_slice
               if seg is not None:
