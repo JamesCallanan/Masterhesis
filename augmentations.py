@@ -13,12 +13,12 @@ def rotate_xy_plane(volume):
   return augmented_volume
 
 # Taken from here https://github.com/ashawkey/volumentations/blob/master/volumentations/augmentations/functionals.py
-def gamma_transform(volume, gamma, eps=1e-7):
+def gamma_transform(volume, gamma_range, eps=1e-7):
   if np.random.uniform(0,1) > 0.5:
     mn = volume.min()
     rng = volume.max() - mn
     volume = (volume - mn)/(rng + eps)
-    return np.power(volume, gamma)
+    return np.power(volume, np.random.uniform(gamma_range[0], gamma_range[1] ))
   return volume
 
 # Taken from here https://github.com/ashawkey/volumentations/blob/master/volumentations/augmentations/functionals.py
@@ -35,7 +35,7 @@ def augment(volume):
     """Rotate the volume by a few degrees"""
     def augment(volume):
       volume = rotate_xy_plane(volume)
-      volume = gamma_transform(volume, gamma=0.85, eps=1e-7)
+      volume = gamma_transform(volume, gamma_range=[0.85,1.15], eps=1e-7)
       volume = gaussian_noise(volume)
       if np.random.uniform(0,1) > 0.5:
         volume = np.fliplr(volume)
