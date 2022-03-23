@@ -234,11 +234,11 @@ def get_trial_and_search_data_by_trial_uid(trial_uid, database_connection_detail
   return trial, tuner_search
 
 
-def get_trials_without_grad_cam_overlap_metrics(database_connection_details):
+def get_trial_uids_without_grad_cam_overlap_metrics(database_connection_details):
   conn = psycopg2.connect(database="postgres", user = database_connection_details['user'], host = database_connection_details['ngrok_host'] , port = database_connection_details['ngrok_port'])
   cursor = conn.cursor()
   with conn:
-      cursor.execute(f""" SELECT kt_trial_id FROM trials 
+      cursor.execute(f""" SELECT trial_uid FROM trials 
                           WHERE 
                                   average_fraction_of_heart_in_mri_batch                        IS NULL 
                               AND average_fraction_of_pos_gradients_in_heart_in_batch_of_mris   IS NULL 
