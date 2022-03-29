@@ -134,7 +134,7 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
 
         patient_disease_class = config_file_attribute_finder(patient_data_path + '/Info.cfg', Patient_attributes.GROUP.name)
 
-        if patient_disease_class in disease_classes:
+        if patient_disease_class in disease_classes or 'ABNOR' in disease_classes:
             ED_frame = config_file_attribute_finder(patient_data_path + '/Info.cfg', Patient_attributes.ED.name)
             heart_MRI_ED_gt_filepath = ''
             heart_MRI_ED_filepath = ''
@@ -168,7 +168,10 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                 roi_filepath = os.path.join(patient_data_path, roi_filename)
                 nib.save(img, roi_filepath)
 
-                destination_directory = os.path.join(root_destination_directory,patient_disease_class)
+                if 'ABNOR' in disease_classes and patient_disease_class != 'NOR':
+                  destination_directory = os.path.join(root_destination_directory,'ABNOR')
+                else:
+                  destination_directory = os.path.join(root_destination_directory,patient_disease_class)
 
                 shutil.move(roi_filepath, destination_directory)
 
@@ -192,12 +195,19 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                   filtered_heart_filename = 'filtered_' + patient_name + '.nii.gz'
                   filtered_heart_filepath = os.path.join(patient_data_path,filtered_heart_filename)
                   nib.save(filtered_heart_img, filtered_heart_filepath)
+                  
+                  if 'ABNOR' in disease_classes and patient_disease_class != 'NOR':
+                    destination_directory = os.path.join(root_destination_directory,'ABNOR')
+                  else:
+                    destination_directory = os.path.join(root_destination_directory,patient_disease_class)
 
-                  destination_directory =  os.path.join(root_destination_directory,patient_disease_class)
                   shutil.move(filtered_heart_filepath, destination_directory)
                   seg_masks_and_image_paths[os.path.join(destination_directory,heart_MRI_ED_filename)] = heart_MRI_ED_gt_filepath 
                 else:
-                  destination_directory = os.path.join(root_destination_directory,patient_disease_class)
+                  if 'ABNOR' in disease_classes and patient_disease_class != 'NOR':
+                    destination_directory = os.path.join(root_destination_directory,'ABNOR')
+                  else:
+                    destination_directory = os.path.join(root_destination_directory,patient_disease_class)
                   shutil.move(heart_MRI_ED_filepath, destination_directory)
                   seg_masks_and_image_paths[os.path.join(destination_directory, heart_MRI_ED_filename)] = heart_MRI_ED_gt_filepath
     return seg_masks_and_image_paths

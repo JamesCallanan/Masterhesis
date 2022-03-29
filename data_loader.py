@@ -34,6 +34,12 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         desired_depth = desired_dimensions['full_image']['desired_depth']   
         desired_width = desired_dimensions['full_image']['desired_width']   # mean value for non ROI images is ~220
         desired_height = desired_dimensions['full_image']['desired_height']  # mean value for non ROI images is ~247
+    
+    if 'ABNOR' in disease_classes and 'NOR' in disease_classes:
+        NOR_ABNOR_classification = True
+    else:
+        NOR_ABNOR_classification = False
+    
 
     zipped_training_data_path = base_training_data_path + '.zip'
     unzipped_training_data_path = base_training_data_path + '/'
@@ -76,7 +82,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     x_val = []
     y_val = []
     filenames_val = []
-
+        
     if 'NOR' in disease_classes:        
         NOR_training_folder_path = training_directory + 'NOR/'
         NOR_train_scan_paths = [ NOR_training_folder_path + x for x in os.listdir(NOR_training_folder_path)]
@@ -101,6 +107,30 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         filenames_val = [*filenames_val, *NOR_val_scan_paths]
         
         binary_classification_label = binary_classification_label + 1   #increment for next use
+
+    if 'ABNOR' in disease_classes:
+        ABNOR_training_folder_path = training_directory + 'ABNOR/'
+        ABNOR_train_scan_paths = [ ABNOR_training_folder_path + x for x in os.listdir(ABNOR_training_folder_path)]
+        ABNOR_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in ABNOR_train_scan_paths])
+        
+        #in ABNOR case there are only ever two classes
+        ABNOR_labels = np.array([ binary_classification_label for _ in range(len(ABNOR_train_scans))])
+
+        x_train = [*x_train, *ABNOR_train_scans]
+        y_train = [*y_train, *ABNOR_labels]
+        filenames_train = [*filenames_train, *ABNOR_train_scan_paths]
+
+        ABNOR_val_folder_path = validation_directory + 'ABNOR/'
+        ABNOR_val_scan_paths = [ ABNOR_val_folder_path + x for x in os.listdir(ABNOR_val_folder_path)]
+        ABNOR_val_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in ABNOR_val_scan_paths])
+        
+        #in ABNOR case there are only ever two classes
+        ABNOR_labels = np.array([ binary_classification_label for _ in range(len(ABNOR_val_scans))])
+        x_val = [*x_val, *ABNOR_val_scans]
+        y_val = [*y_val, *ABNOR_labels]
+        filenames_val = [*filenames_val, *ABNOR_val_scan_paths]
+
+        #don't need to increment binary classification label as it will not be used again  
 
 
     if 'DCM' in disease_classes:        
