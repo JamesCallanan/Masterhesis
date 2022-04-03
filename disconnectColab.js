@@ -1,6 +1,6 @@
 let interval = setInterval( () => {
     //check to see if error class is present on screen
-    if (document.getElementsByClassName('error').length > 0 ) { //Checking to see if HTMLCollection array returned has any elements in it
+    if (document.getElementById('cell-A6eXOX3ea2pC').classList.contains('code-has-output')) { //Checking to see if HTMLCollection array returned has any elements in it
         console.log('Error found')
         //define disconnect function
         const disconnectColab = () => {
@@ -73,7 +73,8 @@ let interval = setInterval( () => {
             }, 1000);
             
             setTimeout(() => {
-                const terminateButton = document.querySelector("body > colab-dialog > paper-dialog > colab-sessions-dialog").shadowRoot.querySelector("div.dialog-main-content > div.sessions-content.layout.vertical > div.dialog-table > colab-session > div.button-action-column > paper-icon-button");
+                //const terminateButton = document.querySelector("body > colab-dialog > paper-dialog > colab-sessions-dialog").shadowRoot.querySelector("div.dialog-main-content > div.sessions-content.layout.vertical > div.dialog-table > colab-session > div.button-action-column > paper-icon-button");
+                const terminateButton = document.querySelector("body > colab-dialog > paper-dialog > colab-sessions-dialog").shadowRoot.querySelector("div.dialog-main-content > div.sessions-content.layout.vertical > div.dialog-table > colab-session > div.button-action-column > paper-button")
                 if (terminateButton) {
                     terminateButton.click();
                 }
@@ -88,22 +89,8 @@ let interval = setInterval( () => {
         }
         //call disconnect function
         disconnectColab();
+        clearInterval(interval);
     } else {
-        console.log('No error found')
+        console.log('Still training')
     }
-},5000)
-
-
-for (const a of document.querySelectorAll("a")) {
-    if (a.textContent.includes("SynthaxError")) {
-      console.log(a.textContent)
-    }
-  }
-
-for (let a of document.querySelectorAll("span")){
-    if (a.innerText){
-        if (a.innerText == 'SynthaxError') {
-            console.log('Error Found')
-        }
-    }else{console.log('False')}
-}
+},8000)
