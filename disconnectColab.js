@@ -1,6 +1,6 @@
 let interval = setInterval( () => {
     //check to see if error class is present on screen
-    if (document.getElementById('cell-A6eXOX3ea2pC').classList.contains('code-has-output')) { //Checking to see if HTMLCollection array returned has any elements in it
+    if (document.getElementById('cell-1bbNPWmojQke').classList.contains('code-has-output')) { //Checking to see if HTMLCollection array returned has any elements in it
         console.log('Error found')
         //define disconnect function
         const disconnectColab = () => {
@@ -74,7 +74,7 @@ let interval = setInterval( () => {
             
             setTimeout(() => {
                 //const terminateButton = document.querySelector("body > colab-dialog > paper-dialog > colab-sessions-dialog").shadowRoot.querySelector("div.dialog-main-content > div.sessions-content.layout.vertical > div.dialog-table > colab-session > div.button-action-column > paper-icon-button");
-                const terminateButton = document.querySelector("body > colab-dialog > paper-dialog > colab-sessions-dialog").shadowRoot.querySelector("div.dialog-main-content > div.sessions-content.layout.vertical > div.dialog-table > colab-session > div.button-action-column > paper-button")
+                const terminateButton = document.querySelector("body > colab-dialog > paper-dialog > colab-sessions-dialog").shadowRoot.querySelector("div.dialog-main-content > div.sessions-content.layout.vertical > div.dialog-table > colab-session > div.button-action-column > paper-icon-button")
                 if (terminateButton) {
                     terminateButton.click();
                 }
