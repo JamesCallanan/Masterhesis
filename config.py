@@ -11,6 +11,9 @@ tensorboard_folder_name = 'Tensorboard'
 models_folder_name = 'Models'
 keras_tuner_folder_name = 'Keras Tuner'
 
+target_resolution = (2.5, 2.5, 5.0)
+image_size = (116, 116, 28)
+
 class Model_Modes(Enum):
   STANDARD = 1
   ZEROS_OUTSIDE_HEART_TRAIN = 2

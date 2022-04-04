@@ -1,4 +1,6 @@
 from tensorflow import keras
+import tensorflow as tf
+import tensorflow.keras.layers as layers
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv3D
 from tensorflow.keras.layers import MaxPool3D
@@ -50,68 +52,61 @@ def get_UNet_layers(inputs):
     # inputs = keras.Input((width, height, depth, 1), name='input_layer')
     x = layers.ZeroPadding3D(padding= [[44, 44], [44, 44], [16, 16]])(inputs)
 
-    conv1_1 = conv3D_layer_bn(x, 'conv1_1', num_filters=32, kernel_size=(3,3,3), padding='VALID')
-    conv1_2 = conv3D_layer_bn(conv1_1, 'conv1_2', num_filters=64, kernel_size=(3,3,3), padding='VALID')
+    conv1_1 = conv3D_layer_bn(x, 'conv1_1', num_filters=32, kernel_size=(3,3,3), padding='VALID', trainable = False)
+    conv1_2 = conv3D_layer_bn(conv1_1, 'conv1_2', num_filters=64, kernel_size=(3,3,3), padding='VALID', trainable = False)
 
     pool1 = max_pool_layer3d(conv1_2, kernel_size=(2,2,1), strides=(2,2,1))
 
-    conv2_1 = conv3D_layer_bn(pool1, 'conv2_1', num_filters=64, kernel_size=(3,3,3), padding='VALID')
-    conv2_2 = conv3D_layer_bn(conv2_1, 'conv2_2', num_filters=128, kernel_size=(3,3,3), padding='VALID')
+    conv2_1 = conv3D_layer_bn(pool1, 'conv2_1', num_filters=64, kernel_size=(3,3,3), padding='VALID', trainable = False)
+    conv2_2 = conv3D_layer_bn(conv2_1, 'conv2_2', num_filters=128, kernel_size=(3,3,3), padding='VALID', trainable = False)
 
     pool2 = max_pool_layer3d(conv2_2, kernel_size=(2,2,1), strides=(2,2,1))
 
-    conv3_1 = conv3D_layer_bn(pool2, 'conv3_1', num_filters=128, kernel_size=(3,3,3), padding='VALID')
-    conv3_2 = conv3D_layer_bn(conv3_1, 'conv3_2', num_filters=256, kernel_size=(3,3,3), padding='VALID')
+    conv3_1 = conv3D_layer_bn(pool2, 'conv3_1', num_filters=128, kernel_size=(3,3,3), padding='VALID', trainable = False)
+    conv3_2 = conv3D_layer_bn(conv3_1, 'conv3_2', num_filters=256, kernel_size=(3,3,3), padding='VALID', trainable = False)
 
     pool3 = max_pool_layer3d(conv3_2, kernel_size=(2,2,2), strides=(2,2,2))
 
-    conv4_1 = conv3D_layer_bn(pool3, 'conv4_1', num_filters=256, kernel_size=(3,3,3), padding='VALID')
-    conv4_2 = conv3D_layer_bn(conv4_1, 'conv4_2', num_filters=512, kernel_size=(3,3,3), padding='VALID')
+    conv4_1 = conv3D_layer_bn(pool3, 'conv4_1', num_filters=256, kernel_size=(3,3,3), padding='VALID', trainable = False)
+    conv4_2 = conv3D_layer_bn(conv4_1, 'conv4_2', num_filters=512, kernel_size=(3,3,3), padding='VALID', trainable = False)
 
-    x = layers.GlobalAveragePooling3D(name='global_av_pool_1')(conv4_2)
-    x = layers.Dense(units=512, activation="relu", name='dense_1')(x)
-    x = layers.Dropout(0.3, name='dropout_1')(x)
+    return conv4_2
 
-    outputs = layers.Dense(units=1, activation="sigmoid", name='output_layer')(x)
-    return outputs
-
-def get_transfer_learned_model(units, activation, dropout, lr):
+def get_transfer_learned_model(units_dense_1, units_dense_2, lr):
     model_weights = get_model_weights()
-    input = keras.Input(shape=(28, 28, 10, 1))
-    x = get_UNet_layers(input)
-    x = layers.Dense(64, activation="relu")(x)
-    x = layers.Dense(64, activation="relu")(x)
-    x = layers.Dense(units=units, activation=activation)(x)
-    if dropout:
-        x = layers.Dropout(rate=0.25)(x)
-    model_combined = keras.Model(inputs=input, outputs=x)
+    input = keras.Input(shape=(28, 28, 10, 1)) #Where was this pulled from?
+    UNet_encoder_ouput = get_UNet_layers(input)
+    x = layers.Flatten()(UNet_encoder_ouput)
+    x = layers.Dense(units=units_dense_1, activation='relu')(x)
+    x = layers.Dense(units=units_dense_2, activation='relu')(x)
+    output = layers.Dense(units=1, activation='sigmoid')(x)
+    model_combined = keras.Model(inputs=input, outputs=output)
     for layer in model_combined.layers:
-      if 'bn' in layer.name:  
-        # print(layer.name)
-        model_combined.get_layer(layer.name).set_weights([ model_weights[f'{layer.name}/gamma:0'],
-                                            model_weights[f'{layer.name}/beta:0'],
-                                            model_weights[f'{layer.name}/moving_mean:0'],
-                                            model_weights[f'{layer.name}/moving_variance:0']
-                                          ])
-      elif 'conv' in layer.name: #using elif as conv is in the name of bn layers too
-        # print(layer.name)
-        model_combined.get_layer(layer.name).set_weights([model_weights[f'{layer.name}/W:0']])
+        if 'bn' in layer.name:  
+            model_combined.get_layer(layer.name).set_weights([ model_weights[f'{layer.name}/gamma:0'],
+                                                model_weights[f'{layer.name}/beta:0'],
+                                                model_weights[f'{layer.name}/moving_mean:0'],
+                                                model_weights[f'{layer.name}/moving_variance:0']
+                                            ])
+        elif 'conv' in layer.name: #using elif as conv is in the name of bn layers too
+            model_combined.get_layer(layer.name).set_weights([model_weights[f'{layer.name}/W:0']])
         
-      model_combined.compile(
+        print(layer.name, ' trainable = ', layer.trainable)
+
+    model_combined.compile(
           optimizer=keras.optimizers.Adam(learning_rate=lr),
-          loss="categorical_crossentropy",
+          loss="binary_crossentropy",
           metrics=["accuracy"],
-      )
+    )
     return model_combined
     
 def build_transfer_learned_model(hp):
-    units = hp.Int("units", min_value=32, max_value=512, step=32)
-    activation = hp.Choice("activation", ["relu", "tanh"])
-    dropout = hp.Boolean("dropout")
+    units_dense_1 = hp.Int("units", min_value=800, max_value=1200, step=50)
+    units_dense_2 = hp.Int("units", min_value=100, max_value=300, step=50)
     lr = hp.Float("lr", min_value=1e-4, max_value=1e-2, sampling="log")
     # call existing model-building code with the hyperparameter values.
     model1 = get_transfer_learned_model(
-        units=units, activation=activation, dropout=dropout, lr=lr
+        units_dense_1=units_dense_1, units_dense_2=units_dense_2, lr=lr
     )
     return model1
 

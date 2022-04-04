@@ -4,7 +4,8 @@ import nibabel as nib
 import shutil
 import numpy as np
 from scipy import ndimage
-from config import training_directory, validation_directory, number_of_patients_per_class
+from config import training_directory, validation_directory, number_of_patients_per_class, target_resolution, image_size
+from skimage import transform
 
 
 # Stores keys needed to retrieve values from the patient's info.cfg files
@@ -264,28 +265,89 @@ def resize_volume(img, desired_depth, desired_width, desired_height):
     img = ndimage.zoom(img, (width_factor, height_factor, depth_factor), order=1)
     return img
 
-def process_scan(path, desired_depth, desired_width, desired_height):
+def crop_or_pad_slice_to_size(slice, desired_x_dimension, desired_y_dimension):
+
+    x, y = slice.shape
+
+    x_s = (x - desired_x_dimension) // 2
+    y_s = (y - desired_y_dimension) // 2
+    x_c = (desired_x_dimension - x) // 2
+    y_c = (desired_y_dimension - y) // 2
+
+    if x > desired_x_dimension and y > desired_y_dimension:
+        slice_cropped = slice[x_s:x_s + desired_x_dimension, y_s:y_s + desired_y_dimension]
+    else:
+        slice_cropped = np.zeros((desired_x_dimension, desired_y_dimension))
+        if x <= desired_x_dimension and y > desired_y_dimension:
+            slice_cropped[x_c:x_c + x, :] = slice[:, y_s:y_s + desired_y_dimension]
+        elif x > desired_x_dimension and y <= desired_y_dimension:
+            slice_cropped[:, y_c:y_c + y] = slice[x_s:x_s + desired_x_dimension, :]
+        else:
+            slice_cropped[x_c:x_c + x, y_c:y_c + y] = slice[:, :]
+
+    return slice_cropped
+
+def process_scan(path):
     """Read and resize volume"""
-    # Read scan
-    volume = read_nifti_file(path)
+    loaded_scan = nib.load(path)
+
+    pixel_size = (loaded_scan[2].structarr['pixdim'][1],
+                  loaded_scan[2].structarr['pixdim'][2],
+                  loaded_scan[2].structarr['pixdim'][3])
+
+    volume = loaded_scan.get_fdata()
+
+    #Want to ensure consistent pixel resolution
+    scale_vector = [pixel_size[0] / target_resolution[0],
+                    pixel_size[1] / target_resolution[1],
+                    pixel_size[2]/ target_resolution[2]]
+    
+    volume_scaled = transform.rescale(  volume,
+                                        scale_vector,
+                                        order=1,
+                                        preserve_range=True,
+                                        multichannel=False,
+                                        mode='constant'
+                                      ) 
+    
     # Normalize
-    volume = normalize(volume) 
+    volume_scaled = normalize(volume_scaled) 
+    desired_x_dimension, desired_y_dimension, max_desired_z_dimension = image_size
+    slice_vol = np.zeros((desired_x_dimension, desired_y_dimension, max_desired_z_dimension), dtype=np.float32)
+
+    curr_z_slice_index = volume_scaled.shape[2]
+    stack_from = (max_desired_z_dimension - curr_z_slice_index) // 2
+
+    if stack_from < 0:
+        raise AssertionError('nz_max is too small for the chosen through plane resolution. Consider changing'
+                              'the size or the target resolution in the through-plane.')
+
+    for z_slice_index in range(curr_z_slice_index):
+
+        slice_rescaled = volume_scaled[:,:,z_slice_index]
+
+        slice_cropped = crop_or_pad_slice_to_size(slice_rescaled, desired_x_dimension, desired_y_dimension)
+
+        slice_vol[:,:,stack_from] = slice_cropped
+
+        stack_from += 1
+
     # # Pad with zeros to make it square shaped
     #volume = make_slices_square(volume)
     # Resize width, height and depth
-    volume = resize_volume(volume, desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height)
+    # volume = resize_volume(volume, desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height)
     return volume
 
 
-def process_seg_mask(path, depth, width, height):
-    volume = read_nifti_file(path)
-    volume = resize_volume(volume, desired_depth = depth, desired_width = width, desired_height = height)
-    return volume
+# def process_seg_mask(path, depth, width, height):
+#     loaded_scan = nib.load(path)
+#     pixel_size = (loaded_scan[2].structarr['pixdim'][1],
+#                   loaded_scan[2].structarr['pixdim'][2],
+#                   loaded_scan[2].structarr['pixdim'][3])
+#     volume = loaded_scan.get_fdata()
 
-
-
-
-
+#     volume = resize_volume(volume, desired_depth = depth, desired_width = width, desired_height = height)
+#     return volume
 
 
 
