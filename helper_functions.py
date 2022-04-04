@@ -291,9 +291,9 @@ def process_scan(path):
     """Read and resize volume"""
     loaded_scan = nib.load(path)
 
-    pixel_size = (loaded_scan[2].structarr['pixdim'][1],
-                  loaded_scan[2].structarr['pixdim'][2],
-                  loaded_scan[2].structarr['pixdim'][3])
+    pixel_size = (loaded_scan.header['pixdim'][1],
+                  loaded_scan.header['pixdim'][2],
+                  loaded_scan.header['pixdim'][3])
 
     volume = loaded_scan.get_fdata()
 
