@@ -90,6 +90,8 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         y_val = [*y_val, *NOR_labels]
         filenames_val = [*filenames_val, *NOR_val_scan_paths]
         
+        print('NOR train scan paths', NOR_train_scan_paths)
+        print('NOR val scan paths', NOR_val_scan_paths)
         binary_classification_label = binary_classification_label + 1   #increment for next use
 
 
@@ -142,7 +144,9 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         x_val = [*x_val, *HCM_val_scans]
         y_val = [*y_val, *HCM_labels]
         filenames_val = [*filenames_val, *HCM_val_scan_paths]
-
+        
+        print('HCM train scan paths', HCM_train_scan_paths)
+        print('HCM val scan paths', HCM_val_scan_paths)
         binary_classification_label = binary_classification_label + 1   #increment for next use
 
     if 'MINF' in disease_classes:        
