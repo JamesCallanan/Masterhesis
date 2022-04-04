@@ -37,8 +37,8 @@ def conv3D_layer_bn(prev_layer,
                     kernel_size=(3,3,3),
                     num_filters=32,
                     padding="SAME"):
-  x = layers.Conv3D(filters=num_filters, kernel_size=kernel_size, activation="relu", padding=padding, name=name, use_bias=False, kernel_initializer=tf.keras.initializers.TruncatedNormal(seed=42))(prev_layer)
-  return layers.BatchNormalization( momentum=0.99, epsilon=1e-3, center=True, scale=True, name=f'{name}_bn' )(x)
+  x = layers.Conv3D(filters=num_filters, kernel_size=kernel_size, activation="relu", padding=padding, name=name, use_bias=False, trainable = False, kernel_initializer=tf.keras.initializers.TruncatedNormal(seed=42))(prev_layer)
+  return layers.BatchNormalization( momentum=0.99, epsilon=1e-3, center=True, scale=True, name=f'{name}_bn' , trainable = False)(x)
 
 
 def max_pool_layer3d(x, kernel_size=(1, 2, 2, 2, 1), strides=(1, 2, 2, 2, 1), padding="SAME"):
@@ -52,23 +52,23 @@ def get_UNet_layers(inputs):
     # inputs = keras.Input((width, height, depth, 1), name='input_layer')
     x = layers.ZeroPadding3D(padding= [[44, 44], [44, 44], [16, 16]])(inputs)
 
-    conv1_1 = conv3D_layer_bn(x, 'conv1_1', num_filters=32, kernel_size=(3,3,3), padding='VALID', trainable = False)
-    conv1_2 = conv3D_layer_bn(conv1_1, 'conv1_2', num_filters=64, kernel_size=(3,3,3), padding='VALID', trainable = False)
+    conv1_1 = conv3D_layer_bn(x, 'conv1_1', num_filters=32, kernel_size=(3,3,3), padding='VALID')
+    conv1_2 = conv3D_layer_bn(conv1_1, 'conv1_2', num_filters=64, kernel_size=(3,3,3), padding='VALID')
 
     pool1 = max_pool_layer3d(conv1_2, kernel_size=(2,2,1), strides=(2,2,1))
 
-    conv2_1 = conv3D_layer_bn(pool1, 'conv2_1', num_filters=64, kernel_size=(3,3,3), padding='VALID', trainable = False)
-    conv2_2 = conv3D_layer_bn(conv2_1, 'conv2_2', num_filters=128, kernel_size=(3,3,3), padding='VALID', trainable = False)
+    conv2_1 = conv3D_layer_bn(pool1, 'conv2_1', num_filters=64, kernel_size=(3,3,3), padding='VALID')
+    conv2_2 = conv3D_layer_bn(conv2_1, 'conv2_2', num_filters=128, kernel_size=(3,3,3), padding='VALID')
 
     pool2 = max_pool_layer3d(conv2_2, kernel_size=(2,2,1), strides=(2,2,1))
 
-    conv3_1 = conv3D_layer_bn(pool2, 'conv3_1', num_filters=128, kernel_size=(3,3,3), padding='VALID', trainable = False)
-    conv3_2 = conv3D_layer_bn(conv3_1, 'conv3_2', num_filters=256, kernel_size=(3,3,3), padding='VALID', trainable = False)
+    conv3_1 = conv3D_layer_bn(pool2, 'conv3_1', num_filters=128, kernel_size=(3,3,3), padding='VALID')
+    conv3_2 = conv3D_layer_bn(conv3_1, 'conv3_2', num_filters=256, kernel_size=(3,3,3), padding='VALID')
 
     pool3 = max_pool_layer3d(conv3_2, kernel_size=(2,2,2), strides=(2,2,2))
 
-    conv4_1 = conv3D_layer_bn(pool3, 'conv4_1', num_filters=256, kernel_size=(3,3,3), padding='VALID', trainable = False)
-    conv4_2 = conv3D_layer_bn(conv4_1, 'conv4_2', num_filters=512, kernel_size=(3,3,3), padding='VALID', trainable = False)
+    conv4_1 = conv3D_layer_bn(pool3, 'conv4_1', num_filters=256, kernel_size=(3,3,3), padding='VALID')
+    conv4_2 = conv3D_layer_bn(conv4_1, 'conv4_2', num_filters=512, kernel_size=(3,3,3), padding='VALID')
 
     return conv4_2
 
