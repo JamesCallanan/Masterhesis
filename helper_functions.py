@@ -337,6 +337,22 @@ def process_scan(path):
     # Resize width, height and depth
     # volume = resize_volume(volume, desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height)
     return slice_vol
+    
+def process_scan(path):
+    """Read and resize volume"""
+    # Read scan
+    loaded_scan = nib.load(path)
+    volume = loaded_scan.get_fdata()
+
+    desired_x_dimension, desired_y_dimension, max_desired_z_dimension = image_size
+
+    # Normalize
+    volume = normalize(volume) 
+    # # Pad with zeros to make it square shaped
+    #volume = make_slices_square(volume)
+    # Resize width, height and depth
+    volume = resize_volume(volume, desired_depth = max_desired_z_dimension, desired_width = desired_x_dimension, desired_height = desired_y_dimension)
+    return volume
 
 
 # def process_seg_mask(path, depth, width, height):
