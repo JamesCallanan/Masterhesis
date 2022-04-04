@@ -13,7 +13,7 @@ from tensorflow.keras.layers import Dropout
 # Load weights from pre-trained UNet
 # Shouldn't be calling this everytime we build the model. Not sure if we can pass other params through with model_weights - should try
 def get_model_weights():
-    checkpoint_filepath = '/content/gdrive/MyDrive/ME Project/Currently working on/Baumgartner/unet3D_bn_modified_wxent/model.ckpt-5'
+    checkpoint_filepath = '/content/gdrive/MyDrive/ME Project/Currently working on/Baumgartner/acdc_segmenter/acdc_logdir/unet3D_bn_modified_wxent/model.ckpt-22499.meta'
     with tf.compat.v1.Session() as sess:
         saver = tf.compat.v1.train.import_meta_graph(f'{checkpoint_filepath}.meta')
         saver.restore(sess, checkpoint_filepath)
@@ -100,6 +100,7 @@ def get_transfer_learned_model(units_dense_1, units_dense_2, lr):
     )
     return model_combined
     
+#need to change it to pass hyperparameter ranges for storage in DB
 def build_transfer_learned_model(hp):
     units_dense_1 = hp.Int("units", min_value=800, max_value=1200, step=50)
     units_dense_2 = hp.Int("units", min_value=100, max_value=300, step=50)
