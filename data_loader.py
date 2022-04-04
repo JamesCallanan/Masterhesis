@@ -16,6 +16,7 @@ from config import training_directory, validation_directory, datasets_wanted, ba
 def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', 'NOR' ],
                                                     train_batch_size = 10,
                                                     validation_batch_size = 8,
+                                                    perform_ROI=False,
                                                     hide_pixels_outside_heart_train = False,
                                                     hide_pixels_outside_heart_val = False,
                                                     num_validation_images = 4,
