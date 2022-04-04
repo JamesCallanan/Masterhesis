@@ -2,12 +2,9 @@ from tensorflow import keras
 import tensorflow as tf
 import tensorflow.keras.layers as layers
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv3D
-from tensorflow.keras.layers import MaxPool3D
-from tensorflow.keras.layers import BatchNormalization
-from tensorflow.keras.layers import GlobalAveragePooling3D
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Dropout , Conv3D , MaxPool3D , BatchNormalization , GlobalAveragePooling3D , Dense
+from config import image_size
+
 
 # Maybe shouldn't be in this file
 # Load weights from pre-trained UNet
@@ -74,7 +71,8 @@ def get_UNet_layers(inputs):
 
 def get_transfer_learned_model(units_dense_1, units_dense_2, lr):
     model_weights = get_model_weights()
-    input = keras.Input(shape=(28, 28, 10, 1)) #Where was this pulled from?
+    x_dimension, y_dimension, z_dimension = image_size
+    input = keras.Input(shape=(x_dimension, y_dimension, z_dimension, 1)) #Where was this pulled from?
     UNet_encoder_ouput = get_UNet_layers(input)
     x = layers.Flatten()(UNet_encoder_ouput)
     x = layers.Dense(units=units_dense_1, activation='relu')(x)
