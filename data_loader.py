@@ -65,7 +65,9 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     y_val = []
     filenames_val = []
 
-    if 'NOR' in disease_classes:        
+    if 'NOR' in disease_classes:  
+        print('entered NOR')
+      
         NOR_training_folder_path = training_directory + 'NOR/'
         NOR_train_scan_paths = [ NOR_training_folder_path + x for x in os.listdir(NOR_training_folder_path)]
         NOR_train_scans = np.array([process_scan(path) for path in NOR_train_scan_paths])
@@ -116,7 +118,9 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         binary_classification_label = binary_classification_label + 1   #increment for next use
 
-    if 'HCM' in disease_classes:        
+    if 'HCM' in disease_classes:   
+        print('entered HCM')
+     
         HCM_training_folder_path = training_directory + 'HCM/'
         HCM_train_scan_paths = [ HCM_training_folder_path + x for x in os.listdir(HCM_training_folder_path)]
         HCM_train_scans = np.array([process_scan(path) for path in HCM_train_scan_paths])
@@ -200,6 +204,11 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     y_val = np.array(y_val)
     filenames_val = np.array(filenames_val)
 
+    print(x_train.shape)
+    print(y_train.shape)
+    print(x_val.shape)
+    print(y_val.shape)
+
     def train_preprocessing(volume, label, paths=None):
         """Process training data by rotating and adding a channel."""
         #volume = augment(volume)
@@ -222,6 +231,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train, filenames_train))
         validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val, filenames_val))
     else:
+        print('entered this else')
         train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
         validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val))
 
