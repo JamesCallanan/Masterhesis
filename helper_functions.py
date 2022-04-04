@@ -352,6 +352,9 @@ def process_scan(path):
     #volume = make_slices_square(volume)
     # Resize width, height and depth
     volume = resize_volume(volume, desired_depth = max_desired_z_dimension, desired_width = desired_x_dimension, desired_height = desired_y_dimension)
+    print('volume is of type', type(volume))
+    print('volume is of shape', volume.shape)
+
     return volume
 
 
