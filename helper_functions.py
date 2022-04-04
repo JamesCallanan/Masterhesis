@@ -336,7 +336,7 @@ def process_scan(path):
     #volume = make_slices_square(volume)
     # Resize width, height and depth
     # volume = resize_volume(volume, desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height)
-    return volume
+    return slice_vol
 
 
 # def process_seg_mask(path, depth, width, height):
