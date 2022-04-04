@@ -287,75 +287,75 @@ def crop_or_pad_slice_to_size(slice, desired_x_dimension, desired_y_dimension):
 
     return slice_cropped
 
-# def process_scan(path):
-#     """Read and resize volume"""
-#     loaded_scan = nib.load(path)
-
-#     pixel_size = (loaded_scan[2].structarr['pixdim'][1],
-#                   loaded_scan[2].structarr['pixdim'][2],
-#                   loaded_scan[2].structarr['pixdim'][3])
-
-#     volume = loaded_scan.get_fdata()
-
-#     #Want to ensure consistent pixel resolution
-#     scale_vector = [pixel_size[0] / target_resolution[0],
-#                     pixel_size[1] / target_resolution[1],
-#                     pixel_size[2]/ target_resolution[2]]
-    
-#     volume_scaled = transform.rescale(  volume,
-#                                         scale_vector,
-#                                         order=1,
-#                                         preserve_range=True,
-#                                         multichannel=False,
-#                                         mode='constant'
-#                                       ) 
-    
-#     # Normalize
-#     volume_scaled = normalize(volume_scaled) 
-#     desired_x_dimension, desired_y_dimension, max_desired_z_dimension = image_size
-#     slice_vol = np.zeros((desired_x_dimension, desired_y_dimension, max_desired_z_dimension), dtype=np.float32)
-
-#     curr_z_slice_index = volume_scaled.shape[2]
-#     stack_from = (max_desired_z_dimension - curr_z_slice_index) // 2
-
-#     if stack_from < 0:
-#         raise AssertionError('nz_max is too small for the chosen through plane resolution. Consider changing'
-#                               'the size or the target resolution in the through-plane.')
-
-#     for z_slice_index in range(curr_z_slice_index):
-
-#         slice_rescaled = volume_scaled[:,:,z_slice_index]
-
-#         slice_cropped = crop_or_pad_slice_to_size(slice_rescaled, desired_x_dimension, desired_y_dimension)
-
-#         slice_vol[:,:,stack_from] = slice_cropped
-
-#         stack_from += 1
-
-#     # # Pad with zeros to make it square shaped
-#     #volume = make_slices_square(volume)
-#     # Resize width, height and depth
-#     # volume = resize_volume(volume, desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height)
-#     return slice_vol
-    
 def process_scan(path):
     """Read and resize volume"""
-    # Read scan
     loaded_scan = nib.load(path)
+
+    pixel_size = (loaded_scan[2].structarr['pixdim'][1],
+                  loaded_scan[2].structarr['pixdim'][2],
+                  loaded_scan[2].structarr['pixdim'][3])
+
     volume = loaded_scan.get_fdata()
 
-    desired_x_dimension, desired_y_dimension, max_desired_z_dimension = image_size
-
+    #Want to ensure consistent pixel resolution
+    scale_vector = [pixel_size[0] / target_resolution[0],
+                    pixel_size[1] / target_resolution[1],
+                    pixel_size[2]/ target_resolution[2]]
+    
+    volume_scaled = transform.rescale(  volume,
+                                        scale_vector,
+                                        order=1,
+                                        preserve_range=True,
+                                        multichannel=False,
+                                        mode='constant'
+                                      ) 
+    
     # Normalize
-    volume = normalize(volume) 
+    volume_scaled = normalize(volume_scaled) 
+    desired_x_dimension, desired_y_dimension, max_desired_z_dimension = image_size
+    slice_vol = np.zeros((desired_x_dimension, desired_y_dimension, max_desired_z_dimension), dtype=np.float32)
+
+    curr_z_slice_index = volume_scaled.shape[2]
+    stack_from = (max_desired_z_dimension - curr_z_slice_index) // 2
+
+    if stack_from < 0:
+        raise AssertionError('nz_max is too small for the chosen through plane resolution. Consider changing'
+                              'the size or the target resolution in the through-plane.')
+
+    for z_slice_index in range(curr_z_slice_index):
+
+        slice_rescaled = volume_scaled[:,:,z_slice_index]
+
+        slice_cropped = crop_or_pad_slice_to_size(slice_rescaled, desired_x_dimension, desired_y_dimension)
+
+        slice_vol[:,:,stack_from] = slice_cropped
+
+        stack_from += 1
+
     # # Pad with zeros to make it square shaped
     #volume = make_slices_square(volume)
     # Resize width, height and depth
-    volume = resize_volume(volume, desired_depth = max_desired_z_dimension, desired_width = desired_x_dimension, desired_height = desired_y_dimension)
-    print('volume is of type', type(volume))
-    print('volume is of shape', volume.shape)
+    # volume = resize_volume(volume, desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height)
+    return slice_vol
+    
+# def process_scan(path):
+#     """Read and resize volume"""
+#     # Read scan
+#     loaded_scan = nib.load(path)
+#     volume = loaded_scan.get_fdata()
 
-    return volume
+#     desired_x_dimension, desired_y_dimension, max_desired_z_dimension = image_size
+
+#     # Normalize
+#     volume = normalize(volume) 
+#     # # Pad with zeros to make it square shaped
+#     #volume = make_slices_square(volume)
+#     # Resize width, height and depth
+#     volume = resize_volume(volume, desired_depth = max_desired_z_dimension, desired_width = desired_x_dimension, desired_height = desired_y_dimension)
+#     print('volume is of type', type(volume))
+#     print('volume is of shape', volume.shape)
+
+#     return volume
 
 
 # def process_seg_mask(path, depth, width, height):
