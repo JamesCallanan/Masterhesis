@@ -103,8 +103,8 @@ def get_transfer_learned_model(additional_dense_layer, units_dense_1, units_dens
 #need to change it to pass hyperparameter ranges for storage in DB
 def build_transfer_learned_model(hp):
     additional_dense_layer = hp.Boolean("additional_dense_layer")
-    units_dense_1 = hp.Int("units", min_value=800, max_value=1200, step=100)
-    units_dense_2 = hp.Int("units", min_value=100, max_value=300, step=50)
+    units_dense_1 = hp.Int("units", min_value=100, max_value=180, step=25)
+    units_dense_2 = hp.Int("units", min_value=40, max_value=100, step=20)
     lr = hp.Float("lr", min_value=1e-4, max_value=1e-2, sampling="log")
     # call existing model-building code with the hyperparameter values.
     model1 = get_transfer_learned_model(
