@@ -69,7 +69,7 @@ def get_UNet_layers(inputs):
 
     return conv4_2
 
-def get_transfer_learned_model(additional_dense_layers, units_dense_1, units_dense_2, lr):
+def get_transfer_learned_model(additional_dense_layer, units_dense_1, units_dense_2, lr):
     model_weights = get_model_weights()
     x_dimension, y_dimension, z_dimension = image_size
     input = keras.Input(shape=(x_dimension, y_dimension, z_dimension, 1)) #Where was this pulled from?
@@ -78,7 +78,7 @@ def get_transfer_learned_model(additional_dense_layers, units_dense_1, units_den
     x = layers.GlobalAveragePooling3D()(UNet_encoder_output) #512 units as output        
     x = layers.Dense(units=units_dense_1, activation='relu')(x)
     if additional_dense_layer:
-       x = layers.Dense(units=units_dense[i], activation='relu')(x)
+       x = layers.Dense(units=units_dense_2, activation='relu')(x)
     output = layers.Dense(units=1, activation='sigmoid')(x)
     model_combined = keras.Model(inputs=input, outputs=output)
     for layer in model_combined.layers:
@@ -102,13 +102,13 @@ def get_transfer_learned_model(additional_dense_layers, units_dense_1, units_den
     
 #need to change it to pass hyperparameter ranges for storage in DB
 def build_transfer_learned_model(hp):
-    additional_dense_layers = hp.Boolean("additional_dense_layers")
+    additional_dense_layer = hp.Boolean("additional_dense_layer")
     units_dense_1 = hp.Int("units", min_value=200, max_value=400, step=50)
     units_dense_2 = hp.Int("units", min_value=50, max_value=200, step=50)
     lr = hp.Float("lr", min_value=1e-4, max_value=1e-2, sampling="log")
     # call existing model-building code with the hyperparameter values.
     model1 = get_transfer_learned_model(
-        additional_dense_layers=additional_dense_layers, units_dense_1=units_dense_1, units_dense_2=units_dense_2, lr=lr
+        additional_dense_layer=additional_dense_layer, units_dense_1=units_dense_1, units_dense_2=units_dense_2, lr=lr
     )
     return model1
 
