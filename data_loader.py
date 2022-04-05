@@ -14,8 +14,8 @@ from config import training_directory, validation_directory, datasets_wanted, ba
 # base_training_data_path = '/content/training' - where you want data to be loaded in to
 
 def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', 'NOR' ],
-                                                    train_batch_size = 10,
-                                                    validation_batch_size = 8,
+                                                    train_batch_size = 1,
+                                                    validation_batch_size = 1,
                                                     perform_ROI=False,
                                                     hide_pixels_outside_heart_train = False,
                                                     hide_pixels_outside_heart_val = False,
