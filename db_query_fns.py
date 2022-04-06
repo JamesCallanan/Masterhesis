@@ -82,7 +82,7 @@ def insert_trial(trial, database_connection_details):
                           trial['last_conv_layer_name'],
                           trial['c1_train_acc'],
                           trial['c2_train_acc'],
-                          trial['c1_val_acc,'],
+                          trial['c1_val_acc'],
                           trial['c2_val_acc']
                         )
                       )
