@@ -62,9 +62,13 @@ def insert_trial(trial, database_connection_details):
                             val_acc,
                             train_loss,
                             train_acc,
-                            last_conv_layer_name
+                            last_conv_layer_name,
+                            c1_train_acc,
+                            c2_train_acc,
+                            c1_val_acc,
+                            c2_val_acc
                           )
-                          VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+                          VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                           ON CONFLICT DO NOTHING
                         """,
                         (
@@ -75,7 +79,11 @@ def insert_trial(trial, database_connection_details):
                           trial['val_acc'],
                           trial['train_loss'],
                           trial['train_acc'],
-                          trial['last_conv_layer_name']
+                          trial['last_conv_layer_name'],
+                          trial['c1_train_acc'],
+                          trial['c2_train_acc'],
+                          trial['c1_val_acc,'],
+                          trial['c2_val_acc']
                         )
                       )
     conn.close()
@@ -188,6 +196,10 @@ def get_trial_and_search_data_by_trial_uid(trial_uid, database_connection_detail
                           train_loss,
                           train_acc,
                           last_conv_layer_name,
+                          c1_train_acc,
+                          c2_train_acc,
+                          c1_val_acc,
+                          c2_val_acc,
                           average_fraction_of_heart_in_mri_batch,
                           average_fraction_of_pos_gradients_in_heart_in_batch_of_mris,
                           average_fraction_of_neg_gradients_in_heart_in_batch_of_mris
@@ -226,9 +238,13 @@ def get_trial_and_search_data_by_trial_uid(trial_uid, database_connection_detail
     'train_loss' : results[22], 
     'train_acc' : results[23], 
     'last_conv_layer_name' : results[24], 
-    'average_fraction_of_heart_in_mri_batch' : results[25], 
-    'average_fraction_of_pos_gradients_in_heart_in_batch_of_mris' : results[26], 
-    'average_fraction_of_neg_gradients_in_heart_in_batch_of_mris' : results[27]
+    'c1_train_acc' : results[25],
+    'c2_train_acc' : results[26],
+    'c1_val_acc' : results[27],
+    'c2_val_acc' : results[28],
+    'average_fraction_of_heart_in_mri_batch' : results[29], 
+    'average_fraction_of_pos_gradients_in_heart_in_batch_of_mris' : results[30], 
+    'average_fraction_of_neg_gradients_in_heart_in_batch_of_mris' : results[31]
   }
 
   return trial, tuner_search
