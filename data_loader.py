@@ -34,12 +34,6 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         desired_depth = desired_dimensions['full_image']['desired_depth']   
         desired_width = desired_dimensions['full_image']['desired_width']   # mean value for non ROI images is ~220
         desired_height = desired_dimensions['full_image']['desired_height']  # mean value for non ROI images is ~247
-    
-    if 'ABNOR' in disease_classes and 'NOR' in disease_classes:
-        NOR_ABNOR_classification = True
-    else:
-        NOR_ABNOR_classification = False
-    
 
     zipped_training_data_path = base_training_data_path + '.zip'
     unzipped_training_data_path = base_training_data_path + '/'
