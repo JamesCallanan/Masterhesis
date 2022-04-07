@@ -24,6 +24,7 @@ class Tuner_Search_Types(Enum):
   RANDOM = 1
   BAYESIAN = 2
   HYPERBAND = 3
+  MANUAL = 4
 
 class Disease_Classes(Enum):
   HCM_NOR = 1
