@@ -101,7 +101,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     if 'ABNOR' in disease_classes:
         ABNOR_training_folder_path = training_directory + 'ABNOR/'
         ABNOR_train_scan_paths = [ ABNOR_training_folder_path + x for x in os.listdir(ABNOR_training_folder_path)]
-        ABNOR_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in ABNOR_train_scan_paths])
+        ABNOR_train_scans = np.array([process_scan(path) for path in ABNOR_train_scan_paths])
         
         #in ABNOR case there are only ever two classes
         ABNOR_labels = np.array([ binary_classification_label for _ in range(len(ABNOR_train_scans))])
@@ -112,7 +112,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         ABNOR_val_folder_path = validation_directory + 'ABNOR/'
         ABNOR_val_scan_paths = [ ABNOR_val_folder_path + x for x in os.listdir(ABNOR_val_folder_path)]
-        ABNOR_val_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in ABNOR_val_scan_paths])
+        ABNOR_val_scans = np.array([process_scan(path) for path in ABNOR_val_scan_paths])
         
         #in ABNOR case there are only ever two classes
         ABNOR_labels = np.array([ binary_classification_label for _ in range(len(ABNOR_val_scans))])
