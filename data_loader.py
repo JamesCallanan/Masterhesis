@@ -5,7 +5,7 @@ from augmentations import augment
 import tensorflow as tf
 import numpy as np
 from random import seed
-from config import training_directory, validation_directory, datasets_wanted, base_training_data_path
+from config import training_directory, validation_directory, datasets_wanted, base_training_data_path, image_size
 
 ###########################################################################################################################
 # Parameters to set
@@ -243,10 +243,14 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     print(x_val.shape)
     print(y_val.shape)
 
+    x_dimension, y_dimension, z_dimension = image_size
+
     def train_preprocessing(volume, label, paths=None):
         """Process training data by rotating and adding a channel."""
         volume = augment(volume)
+        volume = tf.reshape(volume, shape=(x_dimension, y_dimension, z_dimension))
         volume = tf.expand_dims(volume, axis=3)
+
         if paths is not None:
             return volume, label, paths
         else:
