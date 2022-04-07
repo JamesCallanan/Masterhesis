@@ -25,7 +25,9 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
                                                     num_validation_images = 4,
                                                     pass_paths_to_dataset_loaders = False
                                                 ):
-                            
+    if 'ABNOR' in disease_classes and ('HCM' in disease_classes or 'DCM' in disease_classes or 'MINF' in disease_classes or 'RV' in disease_classes):
+        print('Can\'t have \'ABNOR\' in disease_classes as well as individual disease classes.')
+        return  None
     if perform_ROI:
         desired_depth = desired_dimensions['ROI']['desired_depth']     
         desired_width = desired_dimensions['ROI']['desired_width']   # mean value for ROI images with buffer 8 is ~90 (I think)
@@ -127,7 +129,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         #don't need to increment binary classification label as it will not be used again  
 
 
-    if 'DCM' in disease_classes:        
+    if 'DCM' in disease_classes:      
         DCM_training_folder_path = training_directory + 'DCM/'
         DCM_train_scan_paths = [ DCM_training_folder_path + x for x in os.listdir(DCM_training_folder_path)]
         DCM_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in DCM_train_scan_paths])
@@ -152,7 +154,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         binary_classification_label = binary_classification_label + 1   #increment for next use
 
-    if 'HCM' in disease_classes:        
+    if 'HCM' in disease_classes:         
         HCM_training_folder_path = training_directory + 'HCM/'
         HCM_train_scan_paths = [ HCM_training_folder_path + x for x in os.listdir(HCM_training_folder_path)]
         HCM_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in HCM_train_scan_paths])
@@ -177,7 +179,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         binary_classification_label = binary_classification_label + 1   #increment for next use
 
-    if 'MINF' in disease_classes:        
+    if 'MINF' in disease_classes:         
         MINF_training_folder_path = training_directory + 'MINF/'
         MINF_train_scan_paths = [ MINF_training_folder_path + x for x in os.listdir(MINF_training_folder_path)]
         MINF_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in MINF_train_scan_paths])
@@ -202,7 +204,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         binary_classification_label = binary_classification_label + 1   #increment for next use
 
-    if 'RV' in disease_classes:        
+    if 'RV' in disease_classes:         
         RV_training_folder_path = training_directory + 'RV/'
         RV_train_scan_paths = [ RV_training_folder_path + x for x in os.listdir(RV_training_folder_path)]
         RV_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in RV_train_scan_paths])
