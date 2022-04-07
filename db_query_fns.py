@@ -191,6 +191,10 @@ def get_trial_and_search_data_by_trial_uid(trial_uid, database_connection_detail
                           train_loss,
                           train_acc,
                           last_conv_layer_name,
+                          c1_train_acc,
+                          c2_train_acc,
+                          c1_val_acc,
+                          c2_val_acc,
                           average_fraction_of_heart_in_mri_batch,
                           average_fraction_of_pos_gradients_in_heart_in_batch_of_mris,
                           average_fraction_of_neg_gradients_in_heart_in_batch_of_mris
@@ -230,9 +234,13 @@ def get_trial_and_search_data_by_trial_uid(trial_uid, database_connection_detail
     'train_loss' : results[23], 
     'train_acc' : results[24], 
     'last_conv_layer_name' : results[25], 
-    'average_fraction_of_heart_in_mri_batch' : results[26], 
-    'average_fraction_of_pos_gradients_in_heart_in_batch_of_mris' : results[27], 
-    'average_fraction_of_neg_gradients_in_heart_in_batch_of_mris' : results[28]
+    'c1_train_acc' : results[26],
+    'c2_train_acc' : results[27],
+    'c1_val_acc' : results[28],
+    'c2_val_acc' : results[29],
+    'average_fraction_of_heart_in_mri_batch' : results[30], 
+    'average_fraction_of_pos_gradients_in_heart_in_batch_of_mris' : results[31], 
+    'average_fraction_of_neg_gradients_in_heart_in_batch_of_mris' : results[32]
   }
 
   return trial, tuner_search
