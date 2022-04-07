@@ -15,13 +15,16 @@ from config import training_directory, validation_directory, datasets_wanted, ba
 
 def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', 'NOR' ],
                                                     train_batch_size = 8,
-                                                    validation_batch_size = 8,
                                                     perform_ROI=False,
                                                     hide_pixels_outside_heart_train = False,
                                                     hide_pixels_outside_heart_val = False,
                                                     num_validation_images = 4,
                                                     pass_paths_to_dataset_loaders = False
                                                 ):
+    if 'ABNOR' in disease_classes:
+        validation_batch_size = num_validation_image*5
+    else:
+        validation_batch_size = len(disease_classes)*5
 
     print('train_batch_size = ', train_batch_size)
     if 'ABNOR' in disease_classes and ('HCM' in disease_classes or 'DCM' in disease_classes or 'MINF' in disease_classes or 'RV' in disease_classes):
