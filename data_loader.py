@@ -14,17 +14,16 @@ from config import training_directory, validation_directory, datasets_wanted, ba
 # base_training_data_path = '/content/training' - where you want data to be loaded in to
 
 def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', 'NOR' ],
-                                                    train_batch_size = 10,
+                                                    train_batch_size = 8,
                                                     validation_batch_size = 8,
-                                                    perform_ROI = False, 
-                                                    desired_dimensions =    {  'ROI'           :   {'desired_depth': 10, 'desired_width': 90, 'desired_height': 90 }, 
-                                                                                'full_image'    :   {'desired_depth': 10, 'desired_width': 220, 'desired_height': 250 }
-                                                                            },
+                                                    perform_ROI=False,
                                                     hide_pixels_outside_heart_train = False,
                                                     hide_pixels_outside_heart_val = False,
                                                     num_validation_images = 4,
                                                     pass_paths_to_dataset_loaders = False
                                                 ):
+
+    print('train_batch_size = ', train_batch_size)
     if 'ABNOR' in disease_classes and ('HCM' in disease_classes or 'DCM' in disease_classes or 'MINF' in disease_classes or 'RV' in disease_classes):
         print('Can\'t have \'ABNOR\' in disease_classes as well as individual disease classes.')
         return  None
@@ -78,11 +77,12 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     x_val = []
     y_val = []
     filenames_val = []
+
         
     if 'NOR' in disease_classes:        
         NOR_training_folder_path = training_directory + 'NOR/'
         NOR_train_scan_paths = [ NOR_training_folder_path + x for x in os.listdir(NOR_training_folder_path)]
-        NOR_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in NOR_train_scan_paths])
+        NOR_train_scans = np.array([process_scan(path) for path in NOR_train_scan_paths])
         if len(disease_classes) == 2:
             NOR_labels = np.array([ binary_classification_label for _ in range(len(NOR_train_scans))])
         elif len(disease_classes) > 2:
@@ -93,7 +93,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         NOR_val_folder_path = validation_directory + 'NOR/'
         NOR_val_scan_paths = [ NOR_val_folder_path + x for x in os.listdir(NOR_val_folder_path)]
-        NOR_val_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in NOR_val_scan_paths])
+        NOR_val_scans = np.array([process_scan(path) for path in NOR_val_scan_paths])
         if len(disease_classes) == 2:
             NOR_labels = np.array([ binary_classification_label for _ in range(len(NOR_val_scans))])
         elif len(disease_classes) > 2:
@@ -102,6 +102,8 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         y_val = [*y_val, *NOR_labels]
         filenames_val = [*filenames_val, *NOR_val_scan_paths]
         
+        print('NOR train scan paths', NOR_train_scan_paths)
+        print('NOR val scan paths', NOR_val_scan_paths)
         binary_classification_label = binary_classification_label + 1   #increment for next use
 
     if 'ABNOR' in disease_classes:
@@ -132,7 +134,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     if 'DCM' in disease_classes:      
         DCM_training_folder_path = training_directory + 'DCM/'
         DCM_train_scan_paths = [ DCM_training_folder_path + x for x in os.listdir(DCM_training_folder_path)]
-        DCM_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in DCM_train_scan_paths])
+        DCM_train_scans = np.array([process_scan(path) for path in DCM_train_scan_paths])
         if len(disease_classes) == 2:
             DCM_labels = np.array([ binary_classification_label for _ in range(len(DCM_train_scans))])
         elif len(disease_classes) > 2:
@@ -143,7 +145,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         DCM_val_folder_path = validation_directory + 'DCM/'
         DCM_val_scan_paths = [ DCM_val_folder_path + x for x in os.listdir(DCM_val_folder_path)]
-        DCM_val_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in DCM_val_scan_paths])
+        DCM_val_scans = np.array([process_scan(path) for path in DCM_val_scan_paths])
         if len(disease_classes) == 2:
             DCM_labels = np.array([ binary_classification_label for _ in range(len(DCM_val_scans))])
         elif len(disease_classes) > 2:
@@ -154,10 +156,11 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         binary_classification_label = binary_classification_label + 1   #increment for next use
 
+
     if 'HCM' in disease_classes:         
         HCM_training_folder_path = training_directory + 'HCM/'
         HCM_train_scan_paths = [ HCM_training_folder_path + x for x in os.listdir(HCM_training_folder_path)]
-        HCM_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in HCM_train_scan_paths])
+        HCM_train_scans = np.array([process_scan(path) for path in HCM_train_scan_paths])
         if len(disease_classes) == 2:
             HCM_labels = np.array([ binary_classification_label for _ in range(len(HCM_train_scans))])
         elif len(disease_classes) > 2:
@@ -168,7 +171,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         HCM_val_folder_path = validation_directory + 'HCM/'
         HCM_val_scan_paths = [ HCM_val_folder_path + x for x in os.listdir(HCM_val_folder_path)]
-        HCM_val_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in HCM_val_scan_paths])
+        HCM_val_scans = np.array([process_scan(path) for path in HCM_val_scan_paths])
         if len(disease_classes) == 2:
             HCM_labels = np.array([ binary_classification_label for _ in range(len(HCM_val_scans))])
         elif len(disease_classes) > 2:
@@ -176,13 +179,15 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         x_val = [*x_val, *HCM_val_scans]
         y_val = [*y_val, *HCM_labels]
         filenames_val = [*filenames_val, *HCM_val_scan_paths]
-
+        
+        print('HCM train scan paths', HCM_train_scan_paths)
+        print('HCM val scan paths', HCM_val_scan_paths)
         binary_classification_label = binary_classification_label + 1   #increment for next use
 
     if 'MINF' in disease_classes:         
         MINF_training_folder_path = training_directory + 'MINF/'
         MINF_train_scan_paths = [ MINF_training_folder_path + x for x in os.listdir(MINF_training_folder_path)]
-        MINF_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in MINF_train_scan_paths])
+        MINF_train_scans = np.array([process_scan(path) for path in MINF_train_scan_paths])
         if len(disease_classes) == 2:
             MINF_labels = np.array([ binary_classification_label for _ in range(len(MINF_train_scans))])
         elif len(disease_classes) > 2:
@@ -193,7 +198,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         MINF_val_folder_path = validation_directory + 'MINF/'
         MINF_val_scan_paths = [ MINF_val_folder_path + x for x in os.listdir(MINF_val_folder_path)]
-        MINF_val_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in MINF_val_scan_paths])
+        MINF_val_scans = np.array([process_scan(path) for path in MINF_val_scan_paths])
         if len(disease_classes) == 2:
             MINF_labels = np.array([ binary_classification_label for _ in range(len(MINF_val_scans))])
         elif len(disease_classes) > 2:
@@ -207,7 +212,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     if 'RV' in disease_classes:         
         RV_training_folder_path = training_directory + 'RV/'
         RV_train_scan_paths = [ RV_training_folder_path + x for x in os.listdir(RV_training_folder_path)]
-        RV_train_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in RV_train_scan_paths])
+        RV_train_scans = np.array([process_scan(path) for path in RV_train_scan_paths])
         if len(disease_classes) == 2:
             RV_labels = np.array([ binary_classification_label for _ in range(len(RV_train_scans))])
         elif len(disease_classes) > 2:
@@ -218,7 +223,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
 
         RV_val_folder_path = validation_directory + 'RV/'
         RV_val_scan_paths = [ RV_val_folder_path + x for x in os.listdir(RV_val_folder_path)]
-        RV_val_scans = np.array([process_scan( path , desired_depth = desired_depth, desired_width = desired_width, desired_height = desired_height) for path in RV_val_scan_paths])
+        RV_val_scans = np.array([process_scan(path) for path in RV_val_scan_paths])
         if len(disease_classes) == 2:
             RV_labels = np.array([ binary_classification_label for _ in range(len(RV_val_scans))])
         elif len(disease_classes) > 2:
@@ -237,6 +242,11 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     x_val = np.array(x_val)
     y_val = np.array(y_val)
     filenames_val = np.array(filenames_val)
+
+    print(x_train.shape)
+    print(y_train.shape)
+    print(x_val.shape)
+    print(y_val.shape)
 
     def train_preprocessing(volume, label, paths=None):
         """Process training data by rotating and adding a channel."""
@@ -260,6 +270,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
         train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train, filenames_train))
         validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val, filenames_val))
     else:
+        print('entered this else')
         train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
         validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val))
 

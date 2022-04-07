@@ -7,9 +7,13 @@ base_training_data_path = '/content/training'
 number_of_patients_per_class = 20
 
 tuner_search_dir = '/content/gdrive/MyDrive/ME Project/Results/Tuner_searches/'
+manual_search_dir = '/content/gdrive/MyDrive/ME Project/Results/Tuner_searches/Manual/'
 tensorboard_folder_name = 'Tensorboard'
 models_folder_name = 'Models'
 keras_tuner_folder_name = 'Keras Tuner'
+
+target_resolution = (2.5, 2.5, 5.0)
+image_size = (116, 116, 28)
 
 class Model_Modes(Enum):
   STANDARD = 1
@@ -21,6 +25,7 @@ class Tuner_Search_Types(Enum):
   RANDOM = 1
   BAYESIAN = 2
   HYPERBAND = 3
+  MANUAL = 4
 
 class Disease_Classes(Enum):
   HCM_NOR = 1
