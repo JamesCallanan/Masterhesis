@@ -32,6 +32,7 @@ class Disease_Classes(Enum):
   DCM_NOR = 2
   RV_NOR = 3
   MINF_NOR = 4
+  ABNOR_NOR = 5
 
 class Model_Metrics(Enum):
   VAL_ACC = 'val_acc'
