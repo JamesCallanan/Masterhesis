@@ -22,7 +22,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
                                                     num_validation_images = 4,
                                                     pass_paths_to_dataset_loaders = False
                                                 ):
-                            
+    print('train_batch_size = ', train_batch_size)
     zipped_training_data_path = base_training_data_path + '.zip'
     unzipped_training_data_path = base_training_data_path + '/'
 
