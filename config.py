@@ -7,6 +7,7 @@ base_training_data_path = '/content/training'
 number_of_patients_per_class = 20
 
 tuner_search_dir = '/content/gdrive/MyDrive/ME Project/Results/Tuner_searches/'
+manual_search_dir = '/content/gdrive/MyDrive/ME Project/Results/Tuner_searches/Manual/'
 tensorboard_folder_name = 'Tensorboard'
 models_folder_name = 'Models'
 keras_tuner_folder_name = 'Keras Tuner'
