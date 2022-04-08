@@ -22,7 +22,7 @@ def organise_data_directories_and_return_datasets(  disease_classes,
                                                     pass_paths_to_dataset_loaders = False
                                                 ):
     if 'ABNOR' in disease_classes:
-        validation_batch_size = num_validation_image*5
+        validation_batch_size = num_validation_images*5
     else:
         validation_batch_size = len(disease_classes)*5
 
