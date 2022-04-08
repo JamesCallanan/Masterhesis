@@ -182,7 +182,7 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
 
                 seg_masks_and_image_paths[os.path.join(destination_directory,roi_filename)] = cropped_seg_filepath
             
-            else:
+            else: #if not performing ROI
                 if hide_pixels_outside_heart:
                   seg_map = nib.load(heart_MRI_ED_gt_filepath)
                   seg_map = seg_map.get_fdata()
@@ -209,7 +209,9 @@ def move_some_training_files_to_data_train_directory(disease_classes, unzipped_t
                     destination_directory = os.path.join(root_destination_directory,'ABNOR')
                   else:
                     destination_directory = os.path.join(root_destination_directory,patient_disease_class)
-                  shutil.move(heart_MRI_ED_filepath, destination_directory)
+                  # Change for using segmentation masks
+                  #shutil.move(heart_MRI_ED_filepath, destination_directory)
+                  shutil.move(heart_MRI_ED_gt_filepath, destination_directory)
                   seg_masks_and_image_paths[os.path.join(destination_directory, heart_MRI_ED_filename)] = heart_MRI_ED_gt_filepath
     return seg_masks_and_image_paths
 
