@@ -13,7 +13,7 @@ from config import training_directory, validation_directory, datasets_wanted, ba
 # subdirs = ['train/'] - list as follows if want a train and test - not set up for a train and test actually #['train/', 'test/']
 # base_training_data_path = '/content/training' - where you want data to be loaded in to
 
-def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', 'NOR' ],
+def organise_data_directories_and_return_datasets(  disease_classes,
                                                     train_batch_size = 8,
                                                     perform_ROI=False,
                                                     hide_pixels_outside_heart_train = False,
