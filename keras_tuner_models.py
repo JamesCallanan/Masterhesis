@@ -168,12 +168,13 @@ def testModel(lr):
     x = av_pool_layer3d(input, kernel_size=(2,2,2), strides=(2,2,2))
     x = layers.Dense(units=100, activation='relu')(x)
     output = layers.Dense(units=1, activation='sigmoid')(x)
-    model_combined = keras.Model(inputs=input, outputs=output)
-    model_combined.compile(
+    test_model = keras.Model(inputs=input, outputs=output)
+    test_model.compile(
           optimizer=keras.optimizers.Adam(learning_rate=lr),
           loss="binary_crossentropy",
           metrics=["accuracy"],
     )
+    return test_model
 
 #need to change it to pass hyperparameter ranges for storage in DB
 def build_transfer_learned_model(hp, hyperparam_ranges):
