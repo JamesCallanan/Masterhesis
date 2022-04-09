@@ -13,7 +13,7 @@ from config import training_directory, validation_directory, datasets_wanted, ba
 # subdirs = ['train/'] - list as follows if want a train and test - not set up for a train and test actually #['train/', 'test/']
 # base_training_data_path = '/content/training' - where you want data to be loaded in to
 
-def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', 'NOR' ],
+def organise_data_directories_and_return_datasets(  disease_classes,
                                                     train_batch_size = 8,
                                                     perform_ROI=False,
                                                     hide_pixels_outside_heart_train = False,
@@ -22,7 +22,7 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
                                                     pass_paths_to_dataset_loaders = False
                                                 ):
     if 'ABNOR' in disease_classes:
-        validation_batch_size = num_validation_image*5
+        validation_batch_size = num_validation_images*5
     else:
         validation_batch_size = len(disease_classes)*5
 
