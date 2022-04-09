@@ -138,10 +138,10 @@ def Drop_He_GAP_TL_model(additional_dense_layer, units_dense_1, units_dense_2, l
     UNet_encoder_output = get_UNet_layers(input)
     x = layers.GlobalAveragePooling3D()(UNet_encoder_output) #512 units as output
     x = layers.Dropout(rate=0.2)(x)
-    x = layers.Dense(units=units_dense_1, activation='relu', kernel_initializer=tf.keras.initializers.HeNormal())(x)
+    x = layers.Dense(units=units_dense_1, activation='relu', kernel_initializer=tf.keras.initializers.he_normal())(x)
     x = layers.Dropout(rate=0.2)(x)
     if additional_dense_layer:
-       x = layers.Dense(units=units_dense_2, activation='relu', kernel_initializer=tf.keras.initializers.HeNormal() )(x)
+       x = layers.Dense(units=units_dense_2, activation='relu', kernel_initializer=tf.keras.initializers.he_normal() )(x)
        x = layers.Dropout(rate=0.2)(x)
     output = layers.Dense(units=1, activation='sigmoid')(x)
     model_combined = keras.Model(inputs=input, outputs=output)
@@ -170,9 +170,9 @@ def He_GAP_TL_model(additional_dense_layer, units_dense_1, units_dense_2, lr):
     input = keras.Input(shape=(x_dimension, y_dimension, z_dimension, 1)) #Where was this pulled from?
     UNet_encoder_output = get_UNet_layers(input)
     x = layers.GlobalAveragePooling3D()(UNet_encoder_output) #512 units as output        
-    x = layers.Dense(units=units_dense_1, activation='relu', kernel_initializer=tf.keras.initializers.HeNormal())(x)
+    x = layers.Dense(units=units_dense_1, activation='relu', kernel_initializer=tf.keras.initializers.he_normal())(x)
     if additional_dense_layer:
-       x = layers.Dense(units=units_dense_2, activation='relu', kernel_initializer=tf.keras.initializers.HeNormal() )(x)
+       x = layers.Dense(units=units_dense_2, activation='relu', kernel_initializer=tf.keras.initializers.he_normal() )(x)
     output = layers.Dense(units=1, activation='sigmoid')(x)
     model_combined = keras.Model(inputs=input, outputs=output)
     for layer in model_combined.layers:
