@@ -131,6 +131,69 @@ def GAP_TL_model(additional_dense_layer, units_dense_1, units_dense_2, lr):
     )
     return model_combined
 
+def Drop_He_GAP_TL_model(additional_dense_layer, units_dense_1, units_dense_2, lr):
+    model_weights = get_model_weights()
+    x_dimension, y_dimension, z_dimension = image_size
+    input = keras.Input(shape=(x_dimension, y_dimension, z_dimension, 1)) #Where was this pulled from?
+    UNet_encoder_output = get_UNet_layers(input)
+    x = layers.GlobalAveragePooling3D()(UNet_encoder_output) #512 units as output
+    x = layers.Dropout(rate=0.2)(x)
+    x = layers.Dense(units=units_dense_1, activation='relu', kernel_initializer=tf.keras.initializers.HeNormal())(x)
+    x = layers.Dropout(rate=0.2)(x)
+    if additional_dense_layer:
+       x = layers.Dense(units=units_dense_2, activation='relu', kernel_initializer=tf.keras.initializers.HeNormal() )(x)
+       x = layers.Dropout(rate=0.2)(x)
+    output = layers.Dense(units=1, activation='sigmoid')(x)
+    model_combined = keras.Model(inputs=input, outputs=output)
+    for layer in model_combined.layers:
+        if 'bn' in layer.name:  
+            model_combined.get_layer(layer.name).set_weights([ model_weights[f'{layer.name}/gamma:0'],
+                                                model_weights[f'{layer.name}/beta:0'],
+                                                model_weights[f'{layer.name}/moving_mean:0'],
+                                                model_weights[f'{layer.name}/moving_variance:0']
+                                            ])
+        elif 'conv' in layer.name: #using elif as conv is in the name of bn layers too
+            model_combined.get_layer(layer.name).set_weights([model_weights[f'{layer.name}/W:0']])
+        
+        print(layer.name, ' trainable = ', layer.trainable)
+
+    model_combined.compile(
+          optimizer=keras.optimizers.Adam(learning_rate=lr),
+          loss="binary_crossentropy",
+          metrics=["accuracy"],
+    )
+    return model_combined
+
+def He_GAP_TL_model(additional_dense_layer, units_dense_1, units_dense_2, lr):
+    model_weights = get_model_weights()
+    x_dimension, y_dimension, z_dimension = image_size
+    input = keras.Input(shape=(x_dimension, y_dimension, z_dimension, 1)) #Where was this pulled from?
+    UNet_encoder_output = get_UNet_layers(input)
+    x = layers.GlobalAveragePooling3D()(UNet_encoder_output) #512 units as output        
+    x = layers.Dense(units=units_dense_1, activation='relu', kernel_initializer=tf.keras.initializers.HeNormal())(x)
+    if additional_dense_layer:
+       x = layers.Dense(units=units_dense_2, activation='relu', kernel_initializer=tf.keras.initializers.HeNormal() )(x)
+    output = layers.Dense(units=1, activation='sigmoid')(x)
+    model_combined = keras.Model(inputs=input, outputs=output)
+    for layer in model_combined.layers:
+        if 'bn' in layer.name:  
+            model_combined.get_layer(layer.name).set_weights([ model_weights[f'{layer.name}/gamma:0'],
+                                                model_weights[f'{layer.name}/beta:0'],
+                                                model_weights[f'{layer.name}/moving_mean:0'],
+                                                model_weights[f'{layer.name}/moving_variance:0']
+                                            ])
+        elif 'conv' in layer.name: #using elif as conv is in the name of bn layers too
+            model_combined.get_layer(layer.name).set_weights([model_weights[f'{layer.name}/W:0']])
+        
+        print(layer.name, ' trainable = ', layer.trainable)
+
+    model_combined.compile(
+          optimizer=keras.optimizers.Adam(learning_rate=lr),
+          loss="binary_crossentropy",
+          metrics=["accuracy"],
+    )
+    return model_combined
+
 def Dropout_AVpool_TL_model(additional_dense_layer, units_dense_1, units_dense_2, lr, dropout_rate=0.5):
     model_weights = get_model_weights()
     x_dimension, y_dimension, z_dimension = image_size
