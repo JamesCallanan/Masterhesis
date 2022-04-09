@@ -162,6 +162,19 @@ def Dropout_AVpool_TL_model(additional_dense_layer, units_dense_1, units_dense_2
     )
     return model_combined
 
+def testModel():
+    x_dimension, y_dimension, z_dimension = image_size
+    input = keras.Input(shape=(x_dimension, y_dimension, z_dimension, 1)) #Where was this pulled from?
+    x = av_pool_layer3d(input, kernel_size=(2,2,2), strides=(2,2,2))
+    x = layers.Dense(units=100, activation='relu')(x)
+    output = layers.Dense(units=1, activation='sigmoid')(x)
+    model_combined = keras.Model(inputs=input, outputs=output)
+    model_combined.compile(
+          optimizer=keras.optimizers.Adam(learning_rate=lr),
+          loss="binary_crossentropy",
+          metrics=["accuracy"],
+    )
+
 #need to change it to pass hyperparameter ranges for storage in DB
 def build_transfer_learned_model(hp, hyperparam_ranges):
     additional_dense_layer = hp.Boolean("additional_dense_layer")
