@@ -41,6 +41,8 @@ def conv3D_layer_bn(prev_layer,
 def max_pool_layer3d(x, kernel_size=(1, 2, 2, 2, 1), strides=(1, 2, 2, 2, 1), padding="SAME"):
     return layers.MaxPool3D(pool_size=kernel_size, strides=strides, padding=padding)(x)
 
+def av_pool_layer3d(x, kernel_size=(1, 2, 2, 2, 1), strides=(1, 2, 2, 2, 1), padding="SAME"):
+    return layers.AveragePooling3D(pool_size=kernel_size, strides=strides, padding=padding)(x)
 
 def get_UNet_layers(inputs):
     """Build a 3D convolutional neural network model."""
@@ -48,7 +50,6 @@ def get_UNet_layers(inputs):
 
     # inputs = keras.Input((width, height, depth, 1), name='input_layer')
     x = layers.ZeroPadding3D(padding= [[44, 44], [44, 44], [16, 16]])(inputs)
-
     conv1_1 = conv3D_layer_bn(x, 'conv1_1', num_filters=32, kernel_size=(3,3,3), padding='VALID')
     conv1_2 = conv3D_layer_bn(conv1_1, 'conv1_2', num_filters=64, kernel_size=(3,3,3), padding='VALID')
 
@@ -100,6 +101,67 @@ def get_transfer_learned_model(additional_dense_layer, units_dense_1, units_dens
     )
     return model_combined
     
+def GAP_TL_model(additional_dense_layer, units_dense_1, units_dense_2, lr):
+    model_weights = get_model_weights()
+    x_dimension, y_dimension, z_dimension = image_size
+    input = keras.Input(shape=(x_dimension, y_dimension, z_dimension, 1)) #Where was this pulled from?
+    UNet_encoder_output = get_UNet_layers(input)
+    x = layers.GlobalAveragePooling3D()(UNet_encoder_output) #512 units as output        
+    x = layers.Dense(units=units_dense_1, activation='relu')(x)
+    if additional_dense_layer:
+       x = layers.Dense(units=units_dense_2, activation='relu')(x)
+    output = layers.Dense(units=1, activation='sigmoid')(x)
+    model_combined = keras.Model(inputs=input, outputs=output)
+    for layer in model_combined.layers:
+        if 'bn' in layer.name:  
+            model_combined.get_layer(layer.name).set_weights([ model_weights[f'{layer.name}/gamma:0'],
+                                                model_weights[f'{layer.name}/beta:0'],
+                                                model_weights[f'{layer.name}/moving_mean:0'],
+                                                model_weights[f'{layer.name}/moving_variance:0']
+                                            ])
+        elif 'conv' in layer.name: #using elif as conv is in the name of bn layers too
+            model_combined.get_layer(layer.name).set_weights([model_weights[f'{layer.name}/W:0']])
+        
+        print(layer.name, ' trainable = ', layer.trainable)
+
+    model_combined.compile(
+          optimizer=keras.optimizers.Adam(learning_rate=lr),
+          loss="binary_crossentropy",
+          metrics=["accuracy"],
+    )
+    return model_combined
+
+def Dropout_AVpool_TL_model(additional_dense_layer, units_dense_1, units_dense_2, lr, dropout_rate=0.5):
+    model_weights = get_model_weights()
+    x_dimension, y_dimension, z_dimension = image_size
+    input = keras.Input(shape=(x_dimension, y_dimension, z_dimension, 1)) #Where was this pulled from?
+    UNet_encoder_output = get_UNet_layers(input)
+    x = av_pool_layer3d(UNet_encoder_output, kernel_size=(2,2,2), strides=(2,2,2))
+    x = layers.Dropout(rate=dropout_rate, seed=1)(x)
+    x = layers.Dense(units=units_dense_1, activation='relu')(x)
+    if additional_dense_layer:
+       x = layers.Dense(units=units_dense_2, activation='relu')(x)
+    output = layers.Dense(units=1, activation='sigmoid')(x)
+    model_combined = keras.Model(inputs=input, outputs=output)
+    for layer in model_combined.layers:
+        if 'bn' in layer.name:  
+            model_combined.get_layer(layer.name).set_weights([ model_weights[f'{layer.name}/gamma:0'],
+                                                model_weights[f'{layer.name}/beta:0'],
+                                                model_weights[f'{layer.name}/moving_mean:0'],
+                                                model_weights[f'{layer.name}/moving_variance:0']
+                                            ])
+        elif 'conv' in layer.name: #using elif as conv is in the name of bn layers too
+            model_combined.get_layer(layer.name).set_weights([model_weights[f'{layer.name}/W:0']])
+        
+        print(layer.name, ' trainable = ', layer.trainable)
+
+    model_combined.compile(
+          optimizer=keras.optimizers.Adam(learning_rate=lr),
+          loss="binary_crossentropy",
+          metrics=["accuracy"],
+    )
+    return model_combined
+
 #need to change it to pass hyperparameter ranges for storage in DB
 def build_transfer_learned_model(hp, hyperparam_ranges):
     additional_dense_layer = hp.Boolean("additional_dense_layer")
