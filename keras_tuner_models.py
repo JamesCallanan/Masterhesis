@@ -136,9 +136,10 @@ def Dropout_AVpool_TL_model(additional_dense_layer, units_dense_1, units_dense_2
     x_dimension, y_dimension, z_dimension = image_size
     input = keras.Input(shape=(x_dimension, y_dimension, z_dimension, 1)) #Where was this pulled from?
     UNet_encoder_output = get_UNet_layers(input)
-    x = av_pool_layer3d(UNet_encoder_output, kernel_size=(2,2,2), strides=(2,2,2))
-    x = layers.Dropout(rate=dropout_rate, seed=1)(x)
-    x = layers.Dense(units=units_dense_1, activation='relu')(x)
+    av_pool_output = av_pool_layer3d(UNet_encoder_output, kernel_size=(2,2,2), strides=(2,2,2))
+    flatten = layers.Flatten()(av_pool_output)
+    dropout = layers.Dropout(rate=dropout_rate)(flatten)
+    x = layers.Dense(units=units_dense_1, activation='relu')(dropout)
     if additional_dense_layer:
        x = layers.Dense(units=units_dense_2, activation='relu')(x)
     output = layers.Dense(units=1, activation='sigmoid')(x)
