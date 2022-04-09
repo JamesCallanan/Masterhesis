@@ -162,7 +162,7 @@ def Dropout_AVpool_TL_model(additional_dense_layer, units_dense_1, units_dense_2
     )
     return model_combined
 
-def testModel():
+def testModel(lr):
     x_dimension, y_dimension, z_dimension = image_size
     input = keras.Input(shape=(x_dimension, y_dimension, z_dimension, 1)) #Where was this pulled from?
     x = av_pool_layer3d(input, kernel_size=(2,2,2), strides=(2,2,2))
@@ -170,7 +170,7 @@ def testModel():
     output = layers.Dense(units=1, activation='sigmoid')(x)
     model_combined = keras.Model(inputs=input, outputs=output)
     model_combined.compile(
-          optimizer=keras.optimizers.Adam(learning_rate=0.01),
+          optimizer=keras.optimizers.Adam(learning_rate=lr),
           loss="binary_crossentropy",
           metrics=["accuracy"],
     )
