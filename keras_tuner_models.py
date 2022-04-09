@@ -170,7 +170,7 @@ def testModel():
     output = layers.Dense(units=1, activation='sigmoid')(x)
     model_combined = keras.Model(inputs=input, outputs=output)
     model_combined.compile(
-          optimizer=keras.optimizers.Adam(learning_rate=lr),
+          optimizer=keras.optimizers.Adam(learning_rate=0.01),
           loss="binary_crossentropy",
           metrics=["accuracy"],
     )
