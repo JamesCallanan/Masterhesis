@@ -97,7 +97,7 @@ def get_transfer_learned_model(additional_dense_layer, units_dense_1, units_dens
     model_combined.compile(
           optimizer=keras.optimizers.Adam(learning_rate=lr),
           loss="binary_crossentropy",
-          metrics=["accuracy"],
+          metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.TruePositives(), tf.keras.metrics.TrueNegatives(), tf.keras.metrics.FalsePositives(), tf.keras.metrics.FalseNegatives(), tf.keras.metrics.Recall()],
     )
     return model_combined
     
@@ -127,7 +127,7 @@ def GAP_TL_model(additional_dense_layer, units_dense_1, units_dense_2, lr):
     model_combined.compile(
           optimizer=keras.optimizers.Adam(learning_rate=lr),
           loss="binary_crossentropy",
-          metrics=["accuracy"],
+          metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.TruePositives(), tf.keras.metrics.TrueNegatives(), tf.keras.metrics.FalsePositives(), tf.keras.metrics.FalseNegatives(), tf.keras.metrics.Recall()],
     )
     return model_combined
 
@@ -160,7 +160,7 @@ def Drop_He_GAP_TL_model(additional_dense_layer, units_dense_1, units_dense_2, l
     model_combined.compile(
           optimizer=keras.optimizers.Adam(learning_rate=lr),
           loss="binary_crossentropy",
-          metrics=["accuracy"],
+          metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.TruePositives(), tf.keras.metrics.TrueNegatives(), tf.keras.metrics.FalsePositives(), tf.keras.metrics.FalseNegatives(), tf.keras.metrics.Recall()],
     )
     return model_combined
 
@@ -190,7 +190,7 @@ def He_GAP_TL_model(additional_dense_layer, units_dense_1, units_dense_2, lr):
     model_combined.compile(
           optimizer=keras.optimizers.Adam(learning_rate=lr),
           loss="binary_crossentropy",
-          metrics=["accuracy"],
+          metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.TruePositives(), tf.keras.metrics.TrueNegatives(), tf.keras.metrics.FalsePositives(), tf.keras.metrics.FalseNegatives(), tf.keras.metrics.Recall()],
     )
     return model_combined
 
@@ -222,7 +222,7 @@ def Dropout_AVpool_TL_model(additional_dense_layer, units_dense_1, units_dense_2
     model_combined.compile(
           optimizer=keras.optimizers.Adam(learning_rate=lr),
           loss="binary_crossentropy",
-          metrics=["accuracy"],
+          metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.TruePositives(), tf.keras.metrics.TrueNegatives(), tf.keras.metrics.FalsePositives(), tf.keras.metrics.FalseNegatives(), tf.keras.metrics.Recall()],
     )
     return model_combined
 
@@ -236,7 +236,7 @@ def testModel(lr):
     test_model.compile(
           optimizer=keras.optimizers.Adam(learning_rate=lr),
           loss="binary_crossentropy",
-          metrics=["accuracy"],
+          metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.TruePositives(), tf.keras.metrics.TrueNegatives(), tf.keras.metrics.FalsePositives(), tf.keras.metrics.FalseNegatives(), tf.keras.metrics.Recall()],
     )
     return test_model
 
@@ -278,7 +278,7 @@ def get_model_1(num_additional_conv_layers, lr, width, height, depth):
     model.compile(
         optimizer=keras.optimizers.Adam(learning_rate=lr),
         loss="binary_crossentropy",
-        metrics=["accuracy"],
+        metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.TruePositives(), tf.keras.metrics.TrueNegatives(), tf.keras.metrics.FalsePositives(), tf.keras.metrics.FalseNegatives(), tf.keras.metrics.Recall()],
     )
 
     # return constructed network architecture
@@ -322,7 +322,7 @@ def build_model_1(hp, width, height, depth, hyperparam_ranges):
 #     model.compile(
 #         optimizer=keras.optimizers.Adam(learning_rate=lr),
 #         loss="binary_crossentropy",
-#         metrics=["accuracy"],
+#         metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.TruePositives(), tf.keras.metrics.TrueNegatives(), tf.keras.metrics.FalsePositives(), tf.keras.metrics.FalseNegatives(), tf.keras.metrics.Recall()],
 #     )
 
 #     # return constructed network architecture
