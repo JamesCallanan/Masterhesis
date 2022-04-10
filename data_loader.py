@@ -73,7 +73,31 @@ def organise_data_directories_and_return_datasets(  disease_classes,
     y_val = []
     filenames_val = []
 
+    # if 'ABNOR' is in disease_classes we want it to have class 0 (negative class) as it is the majority class.
+    if 'ABNOR' in disease_classes:
+        ABNOR_training_folder_path = training_directory + 'ABNOR/'
+        ABNOR_train_scan_paths = [ ABNOR_training_folder_path + x for x in os.listdir(ABNOR_training_folder_path)]
+        ABNOR_train_scans = np.array([process_scan(path) for path in ABNOR_train_scan_paths])
         
+        #in ABNOR case there are only ever two classes
+        ABNOR_labels = np.array([ binary_classification_label for _ in range(len(ABNOR_train_scans))])
+
+        x_train = [*x_train, *ABNOR_train_scans]
+        y_train = [*y_train, *ABNOR_labels]
+        filenames_train = [*filenames_train, *ABNOR_train_scan_paths]
+
+        ABNOR_val_folder_path = validation_directory + 'ABNOR/'
+        ABNOR_val_scan_paths = [ ABNOR_val_folder_path + x for x in os.listdir(ABNOR_val_folder_path)]
+        ABNOR_val_scans = np.array([process_scan(path) for path in ABNOR_val_scan_paths])
+        
+        #in ABNOR case there are only ever two classes
+        ABNOR_labels = np.array([ binary_classification_label for _ in range(len(ABNOR_val_scans))])
+        x_val = [*x_val, *ABNOR_val_scans]
+        y_val = [*y_val, *ABNOR_labels]
+        filenames_val = [*filenames_val, *ABNOR_val_scan_paths]
+
+        binary_classification_label = binary_classification_label + 1   #increment for next use
+    
     if 'NOR' in disease_classes:        
         NOR_training_folder_path = training_directory + 'NOR/'
         NOR_train_scan_paths = [ NOR_training_folder_path + x for x in os.listdir(NOR_training_folder_path)]
@@ -100,31 +124,6 @@ def organise_data_directories_and_return_datasets(  disease_classes,
         print('NOR train scan paths', NOR_train_scan_paths)
         print('NOR val scan paths', NOR_val_scan_paths)
         binary_classification_label = binary_classification_label + 1   #increment for next use
-
-    if 'ABNOR' in disease_classes:
-        ABNOR_training_folder_path = training_directory + 'ABNOR/'
-        ABNOR_train_scan_paths = [ ABNOR_training_folder_path + x for x in os.listdir(ABNOR_training_folder_path)]
-        ABNOR_train_scans = np.array([process_scan(path) for path in ABNOR_train_scan_paths])
-        
-        #in ABNOR case there are only ever two classes
-        ABNOR_labels = np.array([ binary_classification_label for _ in range(len(ABNOR_train_scans))])
-
-        x_train = [*x_train, *ABNOR_train_scans]
-        y_train = [*y_train, *ABNOR_labels]
-        filenames_train = [*filenames_train, *ABNOR_train_scan_paths]
-
-        ABNOR_val_folder_path = validation_directory + 'ABNOR/'
-        ABNOR_val_scan_paths = [ ABNOR_val_folder_path + x for x in os.listdir(ABNOR_val_folder_path)]
-        ABNOR_val_scans = np.array([process_scan(path) for path in ABNOR_val_scan_paths])
-        
-        #in ABNOR case there are only ever two classes
-        ABNOR_labels = np.array([ binary_classification_label for _ in range(len(ABNOR_val_scans))])
-        x_val = [*x_val, *ABNOR_val_scans]
-        y_val = [*y_val, *ABNOR_labels]
-        filenames_val = [*filenames_val, *ABNOR_val_scan_paths]
-
-        #don't need to increment binary classification label as it will not be used again  
-
 
     if 'DCM' in disease_classes:      
         DCM_training_folder_path = training_directory + 'DCM/'

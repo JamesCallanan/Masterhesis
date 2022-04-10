@@ -93,4 +93,4 @@ let interval = setInterval( () => {
     } else {
         console.log('Still training')
     }
-},8000)
+},108000)
