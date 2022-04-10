@@ -30,6 +30,55 @@ def gaussian_noise(volume):
       return volume + np.random.normal(noise_mean, noise_variance, volume.shape)  
     return volume
 
+#shape when function is called is (220, 250, 10)
+def motion_augmentation(data, seg=None, p_augm=0.5, mu=0, sigma_multiplier = 0.02): #in paper they say sigma was = 20 - might stick with more conservative
+    for mri_slice in range(np.shape(data)[-1]): 
+        if np.random.random() < p_augm: #Only apply to 10% of images
+            offset_x = np.round(np.random.normal(mu, len(data[0])*sigma_multiplier )).astype(int) #if width was 250 pixels we would shift with standard deviation 5 for sigma multiplier = 0.02
+            offset_y = np.round(np.random.normal(mu, len(data[1])*sigma_multiplier )).astype(int) 
+            new_slice = np.zeros(np.shape(data[:,:,0]), dtype=np.float32)
+            num_rows = np.shape(data)[0]
+            num_cols = np.shape(data)[1]
+            if seg is not None:
+                new_slice_seg = np.zeros(np.shape(data[:,:,0]), dtype=np.int32)
+
+            if offset_x > 0 and offset_y > 0:
+                new_slice[ : num_rows - offset_y , offset_x : ] = data[ offset_y : , : num_cols - offset_x , mri_slice]
+
+                if seg is not None:
+                    new_slice_seg[ : num_rows - offset_y , offset_x : ] = seg[ offset_y : , : num_cols - offset_x , mri_slice]
+
+            elif offset_x > 0 and offset_y < 0:
+                new_slice[ : num_rows - abs(offset_y) , offset_x : ] = data[ abs(offset_y) : , : num_cols - offset_x , mri_slice]
+
+                if seg is not None:
+                    new_slice_seg[ : num_rows - abs(offset_y) , offset_x : ] = seg[ abs(offset_y) : , : num_cols - offset_x , mri_slice]
+
+            elif offset_x < 0 and offset_y > 0:
+                new_slice[ : num_rows - offset_y , : num_cols - abs(offset_x) ] = data[ offset_y : , abs(offset_x) : , mri_slice ]
+              
+                if seg is not None:
+                    new_slice_seg[ : num_rows - offset_y , : num_cols - abs(offset_x) ] = seg[ offset_y : , abs(offset_x) : , mri_slice ]
+
+            elif offset_x < 0 and offset_y < 0:
+                new_slice[ abs(offset_y) : , : num_cols - abs(offset_x) ] = data[ : num_rows - abs(offset_y) , abs(offset_x) : , mri_slice ]
+              
+                if seg is not None:
+                    new_slice_seg[ abs(offset_y) : , : num_cols - abs(offset_x) ] = seg[ : num_rows - abs(offset_y) , abs(offset_x) : , mri_slice ]
+
+            else:
+                new_slice = data[:,:,mri_slice]
+                if seg is not None:
+                    new_slice_seg = seg[:,:,mri_slice]
+
+            data[:, :, mri_slice] = new_slice
+
+            if seg is not None:
+                seg[:, :, mri_slice] = new_slice_seg
+
+    return data, seg
+
+
 @tf.function
 def augment(volume):
     """Rotate the volume by a few degrees"""
@@ -37,6 +86,9 @@ def augment(volume):
       volume = rotate_xy_plane(volume)
       volume = gamma_transform(volume, gamma=0.9, eps=1e-7)
       volume = gaussian_noise(volume)
+      volume, seg = motion_augmentation(volume, seg=None, p_augm=0.1, mu=0, sigma_multiplier = 0.02)
+      if np.random.uniform(0,1) > 0.2:
+        volume = np.fliplr(volume)
       return np.ndarray.astype(volume, np.float32) # Had to make this change https://stackoverflow.com/questions/54278894/0-th-value-returned-by-pyfunc-0-is-double-but-expects-float-though-i-think-it
 
     augmented_volume = tf.numpy_function(augment, [volume], tf.float32)
