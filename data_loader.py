@@ -42,7 +42,9 @@ def organise_data_directories_and_return_datasets(  disease_classes = [ 'HCM', '
     # Copy local version of training dataset to working directory
 
     drive.mount('/content/gdrive')
-    os.system(f"cp '/content/gdrive/MyDrive/New Research/NOR_HCM_training.zip' '{zipped_training_data_path}'")
+    #os.system(f"cp '/content/gdrive/MyDrive/New Research/NOR_HCM_training.zip' '{zipped_training_data_path}'")
+    os.system(f"cp '/content/gdrive/MyDrive/ME Project/training.zip' '{zipped_training_data_path}'")
+
     os.system(f"unzip '{zipped_training_data_path}'")
 
     ###########################################################################################################################
